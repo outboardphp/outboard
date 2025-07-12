@@ -17,6 +17,9 @@ jobs:
       matrix:
         package:
           -
+            local_path: 'packages/framework'
+            split_repository: 'framework'
+          -
             local_path: 'packages/dic'
             split_repository: 'di'
           -
