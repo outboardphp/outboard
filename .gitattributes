@@ -1,7 +1,13 @@
-* text=auto
+* text=auto eol=lf
 
 *.css diff=css
 *.md diff=markdown
 *.php diff=php
+*.js* diff=javascript
+*.json diff=json
+*.y*ml diff=yaml
+*.sh diff=sh
+*.ts* diff=typescript
+*.svg diff=svg
 
-/.github export-ignore
+/.git* export-ignore

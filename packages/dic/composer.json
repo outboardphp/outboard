@@ -3,7 +3,7 @@
     "description": "Dependency Injection Container for the Outboard framework and anyone else who wants to use it",
     "type": "library",
     "keywords": ["php", "dic", "ioc", "container", "inversion of control", "dependency injection", "dice"],
-    "homepage": "https://github.com/outboardphp/di",
+    "homepage": "https://github.com/outboardphp/outboard",
     "license": "MPL-2.0",
     "authors": [
         {

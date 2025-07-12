@@ -1,5 +1,5 @@
 {
-    "name": "outboardphp/outboard",
+    "name": "outboardphp/framework",
     "description": "Outboard is a general-purpose PHP app framework.",
     "type": "library",
     "keywords": ["php", "framework", "adr", "mvvm", "oop", "modular", "mvc"],
