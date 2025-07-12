@@ -12,6 +12,5 @@ This is a monorepo containing the framework, related packages, and app skeletons
 - Basic [[path](https://github.com/outboardphp/outboard/tree/main/apps/basic-skeleton)] [[repo](https://github.com/outboardphp/basic-app-skeleton)]
 
 ## Packages
+- Framework [[path](https://github.com/outboardphp/outboard/tree/main/packages/framework)] [[repo](https://github.com/outboardphp/framework)]
 - Dependency Injection Container [[path](https://github.com/outboardphp/outboard/tree/main/packages/dic)] [[repo](https://github.com/outboardphp/di)]
-- Framework [[path](https://github.com/outboardphp/outboard/tree/main/packages/framework)]
-
