@@ -30,6 +30,9 @@ jobs:
             local_path: 'packages/dic'
             split_repository: 'di'
           -
+            local_path: 'packages/wake'
+            split_repository: 'wake'
+          -
             local_path: 'apps/basic-skeleton'
             split_repository: 'basic-app-skeleton'
     steps:

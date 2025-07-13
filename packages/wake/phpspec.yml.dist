@@ -1,0 +1,4 @@
+suites:
+    wake:
+        namespace: Outboard\Wake
+        psr4_prefix: Outboard\Wake
