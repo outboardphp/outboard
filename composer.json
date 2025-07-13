@@ -9,7 +9,7 @@
     "authors": [
         {
             "name": "Garrett Whitehorn",
-            "homepage": "http://garrettw.net/",
+            "homepage": "https://garrettw.net/",
             "role": "Lead Developer"
         }
     ],
@@ -37,7 +37,8 @@
     "autoload": {
         "psr-4": {
             "Outboard\\Di\\": "packages/dic/src/",
-            "Outboard\\Framework\\": "packages/framework/src/"
+            "Outboard\\Framework\\": "packages/framework/src/",
+            "Outboard\\Wake\\": "packages/wake/src/"
         }
     },
     "repositories": [
@@ -54,6 +55,13 @@
             },
             "type": "path",
             "url": "packages/framework"
+        },
+        {
+            "options": {
+                "symlink": true
+            },
+            "type": "path",
+            "url": "packages/wake"
         }
     ],
     "scripts": {
