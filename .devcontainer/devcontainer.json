@@ -25,8 +25,9 @@
 				"redhat.vscode-yaml",
 				"GitHub.vscode-pull-request-github",
         "sonarsource.sonarlint-vscode",
-        "github.vscode-github-actions"
-			],
+        "github.vscode-github-actions",
+        "editorconfig.editorconfig"
+      ],
 			"settings": {}
 		}
 	}
