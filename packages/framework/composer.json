@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": ">=8.4",
-        "outboardphp/di": "*",
+        "outboardphp/di": "@dev",
         "psr/container": "^2.0"
     },
     "require-dev": {

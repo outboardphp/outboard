@@ -16,8 +16,8 @@
         }
     ],
     "require": {
-        "outboardphp/framework": "*",
-        "outboardphp/di": "*"
+        "outboardphp/framework": "@dev",
+        "outboardphp/di": "@dev"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest"

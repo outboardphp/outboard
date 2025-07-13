@@ -2,10 +2,6 @@
     "name": "outboardphp/outboard",
     "description": "Monorepo for OutboardPHP package development.",
     "license": "Unlicense",
-    "homepage": "https://github.com/outboardphp/outboard",
-    "support": {
-        "issues": "https://github.com/outboardphp/outboard/issues"
-    },
     "authors": [
         {
             "name": "Garrett Whitehorn",
@@ -13,12 +9,17 @@
             "role": "Lead Developer"
         }
     ],
+    "homepage": "https://github.com/outboardphp/outboard",
     "require": {
         "php": ">=8.4",
-        "psr/container": "^2.0"
+        "fig/event-dispatcher-util": "dev-master",
+        "psr/container": "^2.0",
+        "psr/event-dispatcher": "^1.0.0",
+        "technically/callable-reflection": "^0.4.1"
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "friendsofphp/php-cs-fixer": "^3.17.0",
         "phpcompatibility/php-compatibility": "^9.3.5",
         "phpspec/phpspec": "@dev",
         "phpstan/phpstan": "^2.1",
@@ -26,20 +27,11 @@
         "squizlabs/php_codesniffer": "^3.13.2",
         "symplify/monorepo-builder": "^11.2"
     },
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        },
-        "minimum-stability": "dev",
-        "prefer-stable": true,
-        "sort-packages": true
-    },
-    "autoload": {
-        "psr-4": {
-            "Outboard\\Di\\": "packages/dic/src/",
-            "Outboard\\Framework\\": "packages/framework/src/",
-            "Outboard\\Wake\\": "packages/wake/src/"
-        }
+    "replace": {
+        "outboardphp/basic-app-skeleton": "self.version",
+        "outboardphp/di": "self.version",
+        "outboardphp/framework": "self.version",
+        "outboardphp/wake": "self.version"
     },
     "repositories": [
         {
@@ -64,6 +56,21 @@
             "url": "packages/wake"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Outboard\\Di\\": "packages/dic/src/",
+            "Outboard\\Framework\\": "packages/framework/src/",
+            "Outboard\\Wake\\": "packages/wake/src/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "minimum-stability": "dev",
+        "prefer-stable": true,
+        "sort-packages": true
+    },
     "scripts": {
         "lint": "phpcs",
         "monorepo:merge": "monorepo-builder merge",
@@ -73,8 +80,11 @@
         "monorepo:release": "monorepo-builder release",
         "test": ""
     },
-    "replace": {
-        "outboardphp/framework": "self.version",
-        "outboardphp/di": "self.version"
+    "provide": {
+        "psr/container-implementation": "1.0.0",
+        "psr/event-dispatcher-implementation": "1.0.0"
+    },
+    "support": {
+        "issues": "https://github.com/outboardphp/outboard/issues"
     }
 }
