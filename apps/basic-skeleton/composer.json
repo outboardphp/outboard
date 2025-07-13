@@ -5,6 +5,9 @@
     "keywords": ["php", "outboard", "skeleton", "app"],
     "license": "Unlicense",
     "homepage": "https://github.com/outboardphp/basic-app-skeleton",
+    "support": {
+        "issues": "https://github.com/outboardphp/outboard/issues"
+    },
     "authors": [
         {
             "name": "Garrett Whitehorn",

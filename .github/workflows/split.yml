@@ -1,16 +1,23 @@
 name: 'Split Packages'
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
+  workflow_run:
+    workflows: ["Build"]
+    types:
+      - completed
 
 env:
   GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
 jobs:
   split_packages:
+    if: >
+      (  github.event_name == 'workflow_run' &&
+         github.event.workflow_run.event == 'push' &&
+         github.event.workflow_run.conclusion == 'success'
+      ) || github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
     name: 'Split Packages'
     strategy:
@@ -26,7 +33,7 @@ jobs:
             local_path: 'apps/basic-skeleton'
             split_repository: 'basic-app-skeleton'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: .github/split-preprocess.sh
       # no tag
       -

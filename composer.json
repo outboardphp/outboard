@@ -1,4 +1,10 @@
 {
+    "name": "outboardphp/outboard",
+    "description": "Monorepo for OutboardPHP package development.",
+    "homepage": "https://github.com/outboardphp/outboard",
+    "support": {
+        "issues": "https://github.com/outboardphp/outboard/issues"
+    },
     "authors": [
         {
             "name": "Garrett Whitehorn",
@@ -11,10 +17,21 @@
         "psr/container": "^2.0"
     },
     "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpcompatibility/php-compatibility": "^9.3.5",
         "phpspec/phpspec": "@dev",
         "phpstan/phpstan": "^2.1",
         "roave/security-advisories": "dev-latest",
+        "squizlabs/php_codesniffer": "^3.13.2",
         "symplify/monorepo-builder": "^11.2"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "minimum-stability": "dev",
+        "prefer-stable": true,
+        "sort-packages": true
     },
     "autoload": {
         "psr-4": {
@@ -39,11 +56,13 @@
         }
     ],
     "scripts": {
+        "lint": "phpcs",
         "monorepo:merge": "monorepo-builder merge",
         "monorepo:bump": "monorepo-builder bump-interdependency",
         "monorepo:validate": "monorepo-builder validate",
         "monorepo:alias": "monorepo-builder package-alias",
-        "monorepo:release": "monorepo-builder release"
+        "monorepo:release": "monorepo-builder release",
+        "test": ""
     },
     "replace": {
         "outboardphp/framework": "self.version",

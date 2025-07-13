@@ -23,7 +23,9 @@
 				"mehedidracula.php-namespace-resolver",
 				"pflannery.vscode-versionlens",
 				"redhat.vscode-yaml",
-				"GitHub.vscode-pull-request-github"
+				"GitHub.vscode-pull-request-github",
+        "sonarsource.sonarlint-vscode",
+        "github.vscode-github-actions"
 			],
 			"settings": {}
 		}

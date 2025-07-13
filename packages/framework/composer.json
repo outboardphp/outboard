@@ -3,7 +3,10 @@
     "description": "Outboard is a general-purpose PHP app framework.",
     "type": "library",
     "keywords": ["php", "framework", "adr", "mvvm", "oop", "modular", "mvc"],
-    "homepage": "https://github.com/outboardphp/outboard",
+    "homepage": "https://github.com/outboardphp/framework",
+    "support": {
+        "issues": "https://github.com/outboardphp/outboard/issues"
+    },
     "license": "MPL-2.0",
     "authors": [
         {
