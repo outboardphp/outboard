@@ -22,7 +22,7 @@ RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime \
         wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && git config --global --add safe.directory /var/www/html \
+    && git config --global --add safe.directory /var/www/html
 
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update \

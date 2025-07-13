@@ -1,6 +1,7 @@
 {
     "name": "outboardphp/outboard",
     "description": "Monorepo for OutboardPHP package development.",
+    "license": "Unlicense",
     "homepage": "https://github.com/outboardphp/outboard",
     "support": {
         "issues": "https://github.com/outboardphp/outboard/issues"
