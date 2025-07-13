@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Outboard\Di;
+namespace Outboard\Di\Traits;
 
 use Psr\Container\ContainerInterface;
 use Outboard\Di\Exception\ContainerException;
 
-trait ParentContainerAware
+trait RespectfulContainer
 {
     public readonly ?ContainerInterface $parent;
 

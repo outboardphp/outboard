@@ -1,8 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
-namespace Outboard\Di;
+namespace Outboard\Di\Contracts;
 
 use Psr\Container\ContainerInterface;
 

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Outboard\Di;
 
-use Outboard\Di\Exception\ContainerException;
+use Outboard\Di\Contracts\ComposableContainer;
 use Outboard\Di\Exception\NotFoundException;
+use Outboard\Di\Traits\ContainerCommonArrayAccess;
 use Psr\Container\ContainerInterface;
 
 class CompositeContainer implements ContainerInterface, \ArrayAccess
 {
-    use ContainerCommon;
+    use ContainerCommonArrayAccess;
 
     /**
      * @param ContainerInterface[] $containers An array of containers to be used sequentially for resolving dependencies.
@@ -51,15 +52,5 @@ class CompositeContainer implements ContainerInterface, \ArrayAccess
             return $foundInContainer->get($id);
         }
         throw new NotFoundException("No entry was found for '$id'.");
-    }
-
-    /**
-     * Do not use.
-     * @throws ContainerException
-     */
-    #[\Override]
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        throw new ContainerException('Cannot set an instance on a composite container.');
     }
 }

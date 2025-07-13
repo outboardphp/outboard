@@ -19,11 +19,12 @@ class DefinitionBuilder
     }
 
     /**
-     * Create instances using this rule as singletons within the container.
+     * Create instances using this rule as singletons within the container, or set a specific scope.
+     * Accepts true/false, 'request', or 'session'.
      */
-    public function singleton(): static
+    public function singleton(bool|string $singleton = true): static
     {
-        $this->rule->singleton = true;
+        $this->rule->singleton = $singleton;
         return $this;
     }
 
@@ -83,6 +84,15 @@ class DefinitionBuilder
     public function call(callable $callable): static
     {
         $this->rule->call = $callable;
+        return $this;
+    }
+
+    /**
+     * Add tags for service tagging.
+     */
+    public function tags(array $tags): static
+    {
+        $this->rule->tags = $tags;
         return $this;
     }
 }

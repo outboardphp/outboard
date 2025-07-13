@@ -1,22 +1,25 @@
 <?php
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpInappropriateInheritDocUsageInspection */
 
-namespace Outboard\Di;
+declare(strict_types=1);
+
+namespace Outboard\Di\Traits;
 
 use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Exception\NotFoundException;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
-trait ContainerCommon
+trait ContainerCommonArrayAccess
 {
     /**
      * @inheritDoc
-     * @throws ContainerExceptionInterface
+     * @throws ContainerException
      */
     #[\Override]
     public function offsetExists(mixed $offset): bool
     {
-        if (!is_string($offset)) {
+        if (!\is_string($offset)) {
             throw new ContainerException('Container keys must be strings.');
         }
         return $this->has($offset);
@@ -25,15 +28,25 @@ trait ContainerCommon
     /**
      * @inheritDoc
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
      */
     #[\Override]
     public function offsetGet(mixed $offset): mixed
     {
-        if (!is_string($offset)) {
+        if (!\is_string($offset)) {
             throw new NotFoundException('Container keys must be strings.');
         }
         return $this->get($offset);
+    }
+
+    /**
+     * Do not use.
+     * @inheritDoc
+     * @throws ContainerException
+     */
+    #[\Override]
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        throw new ContainerException('Cannot set an instance directly on the container.');
     }
 
     /**
