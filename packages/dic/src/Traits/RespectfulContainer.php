@@ -21,7 +21,7 @@ trait RespectfulContainer
         if (isset($this->parent)) {
             throw new ContainerException('Parent container is already set.');
         }
-        $this->parent = $container;
+        $this->parent = $container; // @phpstan-ignore property.readOnlyAssignNotInConstructor
     }
 
 

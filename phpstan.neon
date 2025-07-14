@@ -1,0 +1,9 @@
+parameters:
+    level: 9
+    paths:
+        - apps/basic-skeleton/src
+        - packages/dic/src
+        - packages/framework/src
+        - packages/wake/src
+    bootstrapFiles:
+        - vendor/autoload.php

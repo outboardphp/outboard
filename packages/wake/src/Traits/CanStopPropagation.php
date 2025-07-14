@@ -4,6 +4,8 @@ namespace Outboard\Wake\Traits;
 
 /**
  * A simple implementation for Psr\EventDispatcher\StoppableEventInterface
+ *
+ * @phpstan-ignore trait.unused
  */
 trait CanStopPropagation
 {

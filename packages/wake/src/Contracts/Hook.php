@@ -12,6 +12,7 @@ interface Hook
     /**
      * Add returned value from a listener
      *
+     * @param mixed $val the value to add, defaults to null
      * @return mixed the result that was added
      */
     public function addResult($val = null);
@@ -22,7 +23,9 @@ interface Hook
     public function getResult(): mixed;
 
     /**
-     * Get array of all values returned from listeners
+     * Get all values returned from listeners
+     *
+     * @return iterable<mixed> containing all results
      */
-    public function getAllResults(): array;
+    public function getAllResults(): iterable;
 }

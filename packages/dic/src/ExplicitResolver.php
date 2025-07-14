@@ -2,19 +2,16 @@
 
 namespace Outboard\Di;
 
+use Outboard\Di\Contracts\DefinitionProvider;
 use Outboard\Di\Contracts\Resolver;
 use Psr\Container\ContainerInterface;
 
 class ExplicitResolver implements Resolver
 {
-    private array $definitions;
-    private ContainerInterface $container;
-
-    public function __construct(array $definitions, ContainerInterface $container)
-    {
-        $this->definitions = $definitions;
-        $this->container = $container;
-    }
+    public function __construct(
+        protected ContainerInterface $container,
+        protected DefinitionProvider $definitions,
+    ) {}
 
     public function has(string $id): bool
     {

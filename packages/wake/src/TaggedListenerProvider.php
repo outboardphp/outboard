@@ -20,7 +20,7 @@ class TaggedListenerProvider implements ListenerProviderInterface
     public function __construct(
         public readonly TaggedListenerCollection $listeners,
         protected string $eventType = 'stdClass',
-        protected string $tagMethod = 'tag'
+        protected string $tagMethod = 'tag',
     ) {}
 
     protected function eventType(): string
@@ -33,12 +33,18 @@ class TaggedListenerProvider implements ListenerProviderInterface
         return $this->tagMethod;
     }
 
-    protected function getListenersForTag(string $tag): iterable
+    /**
+     * @return array<string, callable[]>
+     */
+    protected function getListenersForTag(string $tag): array
     {
         return $this->listeners->getListenersForTag($tag);
     }
 
-    protected function getListenersForAllTags(): iterable
+    /**
+     * @return array<string, callable[]>
+     */
+    protected function getListenersForAllTags(): array
     {
         return $this->getListenersForTag('*');
     }

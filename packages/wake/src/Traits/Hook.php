@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Outboard\Wake\Traits;
 
+/**
+ * @phpstan-ignore trait.unused
+ */
 trait Hook
 {
     /** @var array Contains the return values of previously-called event listeners */
@@ -12,6 +15,7 @@ trait Hook
     /**
      * Add returned value from a listener
      *
+     * @param mixed $val The value to add to the results array
      * @return mixed the result that was added
      */
     public function addResult($val = null)
@@ -32,6 +36,8 @@ trait Hook
 
     /**
      * Get array of all values returned from listeners
+     *
+     * @return mixed[]
      */
     public function getAllResults(): array
     {

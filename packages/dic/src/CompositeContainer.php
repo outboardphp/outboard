@@ -6,13 +6,10 @@ namespace Outboard\Di;
 
 use Outboard\Di\Contracts\ComposableContainer;
 use Outboard\Di\Exception\NotFoundException;
-use Outboard\Di\Traits\ContainerCommonArrayAccess;
 use Psr\Container\ContainerInterface;
 
-class CompositeContainer implements ContainerInterface, \ArrayAccess
+class CompositeContainer implements ContainerInterface
 {
-    use ContainerCommonArrayAccess;
-
     /**
      * @param ContainerInterface[] $containers An array of containers to be used sequentially for resolving dependencies.
      */
@@ -34,6 +31,7 @@ class CompositeContainer implements ContainerInterface, \ArrayAccess
      * @template T
      * @param string|class-string<T> $id Identifier of the entry to look for.
      * @return T|mixed|null
+     * @phpstan-ignore method.templateTypeNotInParameter
      */
     #[\Override]
     public function get(string $id)

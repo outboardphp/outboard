@@ -14,11 +14,16 @@ use Outboard\Wake\Contracts\Hook;
  *
  * @see https://www.php-fig.org/psr/psr-14/
  */
-class EventDispatcher implements EventDispatcherInterface
+readonly class EventDispatcher implements EventDispatcherInterface
 {
-    public function __construct(public readonly ListenerProviderInterface $provider) {}
+    public function __construct(public ListenerProviderInterface $provider) {}
 
-    public function __invoke(object $event): object
+    /**
+     * @param object|object[] $event
+     * @return object|object[]
+     * @throws \Throwable
+     */
+    public function __invoke(object|array $event): object|array
     {
         return $this->dispatch($event);
     }
@@ -26,6 +31,7 @@ class EventDispatcher implements EventDispatcherInterface
     /**
      * @param object|object[] $event
      * @return object|object[]
+     * @throws \Throwable
      */
     public function dispatch(object|array $event): object|array
     {

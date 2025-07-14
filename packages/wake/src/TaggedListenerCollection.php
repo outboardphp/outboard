@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Outboard\Wake;
 
 use Technically\CallableReflection\CallableReflection;
-use Technically\CallableReflection\Parameters\TypeReflection;
 
 class TaggedListenerCollection
 {
@@ -18,9 +17,9 @@ class TaggedListenerCollection
      * Get listeners for the tag name specified.
      *
      * @param string $tag
-     * @return iterable<callable> listeners
+     * @return array<string, callable[]> listeners
      */
-    public function getListenersForTag(string $tag): iterable
+    public function getListenersForTag(string $tag): array
     {
         return $this->listeners[$tag] ?? [];
     }
@@ -30,7 +29,8 @@ class TaggedListenerCollection
      *
      * @param string $tag
      * @param callable $listener Must accept one typehinted parameter: an event object
-     * @throws InvalidArgumentException if listener validation fails
+     * @throws \InvalidArgumentException if listener validation fails
+     * @return static
      */
     public function add(string $tag, callable $listener): static
     {
@@ -40,9 +40,8 @@ class TaggedListenerCollection
             $matched = true;
         }
         if (!$matched) {
-            throw new \InvalidArgumentException(
-                'Listener callable must define one typehinted parameter that accepts an event object'
-            );
+            throw new \InvalidArgumentException('Listener callable must define one typehinted parameter '
+                . 'that accepts an event object');
         }
 
         return $this;
@@ -67,7 +66,7 @@ class TaggedListenerCollection
      * @param callable $listener The exact listener that was originally attached
      * @param string $eventName The event it is listening for, if different from the parameter's typehint
      */
-    public function remove(string $tag, callable $listener, string $eventName = '')
+    public function remove(string $tag, callable $listener, string $eventName = ''): void
     {
         // Detach from manual event name
         $key = array_search($listener, $this->listeners[$tag][$eventName]);
@@ -96,12 +95,14 @@ class TaggedListenerCollection
         }
     }
 
+    /**
+     * @return iterable<string>
+     */
     protected function getCallableParamTypes(callable $inspect): iterable
     {
         $reflection = CallableReflection::fromCallable($inspect);
         [$param] = $reflection->getParameters();
         foreach ($param->getTypes() as $paramType) {
-            /** @var TypeReflection $paramType */
             if ($paramType->isObject()) {
                 yield $paramType->getType();
             }

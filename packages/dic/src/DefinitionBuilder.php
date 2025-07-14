@@ -52,6 +52,8 @@ class DefinitionBuilder
      * Supply parameters to the constructor that will be called.
      * They can be named, positional, or typed, and can be supplied as a single associative array or several parameters.
      * The array form is required for typed parameters.
+     *
+     * @param array<int|string, mixed>|mixed ...$params
      */
     public function withParams(...$params): static
     {
@@ -89,6 +91,8 @@ class DefinitionBuilder
 
     /**
      * Add tags for service tagging.
+     *
+     * @param string[] $tags
      */
     public function tags(array $tags): static
     {

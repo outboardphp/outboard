@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App;
 
-use Outboard\Di\RuleProvider;
+use Outboard\Di\Contracts\DefinitionProvider;
 
-class ConfigProvider implements RuleProvider
+class ConfigProvider implements DefinitionProvider
 {
-    public function rules()
+    public function getDefinitions(): array
     {
-        // TODO: Implement rules() method.
+        // TODO: Implement getDefinitions() method.
     }
 }

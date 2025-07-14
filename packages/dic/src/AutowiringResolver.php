@@ -2,21 +2,18 @@
 
 namespace Outboard\Di;
 
+use Outboard\Di\Contracts\DefinitionProvider;
 use Outboard\Di\Contracts\Resolver;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
 class AutowiringResolver implements Resolver
 {
-    private ContainerInterface $container;
-    private array $definitions;
-
     // Optionally accept config/definitions for autowiring exclusions, preferences, etc.
-    public function __construct(ContainerInterface $container, array $definitions = [])
-    {
-        $this->container = $container;
-        $this->definitions = $definitions;
-    }
+    public function __construct(
+        protected ContainerInterface $container,
+        protected ?DefinitionProvider $definitions = null,
+    ) {}
 
     public function has(string $id): bool
     {

@@ -11,10 +11,13 @@ use Psr\EventDispatcher\ListenerProviderInterface;
  *
  * @see https://www.php-fig.org/psr/psr-14/
  */
-class ListenerProvider implements ListenerProviderInterface
+readonly class ListenerProvider implements ListenerProviderInterface
 {
-    public function __construct(public readonly ListenerCollection $listeners) {}
+    public function __construct(public ListenerCollection $listeners) {}
 
+    /**
+     * @return iterable<callable>
+     */
     public function getListenersForEvent(object $event): iterable
     {
         foreach ($this->listeners->listeners as $type => $listeners) {

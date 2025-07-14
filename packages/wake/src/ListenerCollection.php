@@ -12,13 +12,13 @@ class ListenerCollection
     /**
      * @param array<string, callable[]> $listeners Takes the form of: ['EventClass' => [callable, ...], ...]
      */
-    public function __construct(public readonly array $listeners = []) {}
+    public function __construct(public array $listeners = []) {}
 
     /**
      * Adds a new listener to the collection.
      *
      * @param callable $listener Must accept one typehinted parameter: an event object
-     * @throws InvalidArgumentException if listener validation fails
+     * @throws \InvalidArgumentException if listener validation fails
      */
     public function add(callable $listener): static
     {
@@ -28,9 +28,8 @@ class ListenerCollection
             $matched = true;
         }
         if (!$matched) {
-            throw new \InvalidArgumentException(
-                'Listener callable must define one typehinted parameter that accepts an event object'
-            );
+            throw new \InvalidArgumentException('Listener callable must define one typehinted parameter '
+                . 'that accepts an event object');
         }
 
         return $this;
@@ -50,7 +49,7 @@ class ListenerCollection
      * @param callable $listener The exact listener that was originally attached
      * @param string $eventName The event it is listening for, if different from the parameter's typehint
      */
-    public function remove(callable $listener, string $eventName = '')
+    public function remove(callable $listener, string $eventName = ''): void
     {
         // Detach from manual event name
         $key = array_search($listener, $this->listeners[$eventName]);
@@ -79,12 +78,14 @@ class ListenerCollection
         }
     }
 
+    /**
+     * @return iterable<string>
+     */
     protected function getCallableParamTypes(callable $inspect): iterable
     {
         $reflection = CallableReflection::fromCallable($inspect);
         [$param] = $reflection->getParameters();
         foreach ($param->getTypes() as $paramType) {
-            /** @var TypeReflection $paramType */
             if ($paramType->isObject()) {
                 yield $paramType->getType();
             }

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Outboard\Framework;
 
-class ConfigProvider implements \Outboard\Di\RuleProvider
+class ConfigProvider implements \Outboard\Di\Contracts\DefinitionProvider
 {
-    public function rules()
+    public function getDefinitions(): array
     {
-        // TODO: Implement rules() method.
+        // TODO: Implement getDefinitions() method.
         // The most basic things we need are a DI container object, its configuration, and an invokable Application object.
         // We may want a Builder class to provide the DI config in order to simplify it, because I want to keep the
         // essential bits of config out of the app skeleton.

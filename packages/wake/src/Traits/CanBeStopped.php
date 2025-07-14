@@ -5,6 +5,8 @@ namespace Outboard\Wake\Traits;
 /**
  * Includes CanStopPropagation.
  * Adds a method to stop propagation from outside the event.
+ *
+ * @phpstan-ignore trait.unused
  */
 trait CanBeStopped
 {
