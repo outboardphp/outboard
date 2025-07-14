@@ -7,6 +7,6 @@ readonly class ResolvedEntry
     public function __construct(
         public string      $id,
         public mixed       $instance,
-        public ?Definition $definition = null
+        public ?Definition $definition = null,
     ) {}
 }

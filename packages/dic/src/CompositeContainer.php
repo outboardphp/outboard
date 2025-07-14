@@ -31,15 +31,6 @@ class CompositeContainer implements ContainerInterface, \ArrayAccess
 
     /**
      * @inheritDoc
-     */
-    #[\Override]
-    public function has(string $id): bool
-    {
-        return \array_any($this->containers, fn($container) => $container->has($id));
-    }
-
-    /**
-     * @inheritDoc
      * @template T
      * @param string|class-string<T> $id Identifier of the entry to look for.
      * @return T|mixed|null
@@ -52,5 +43,14 @@ class CompositeContainer implements ContainerInterface, \ArrayAccess
             return $foundInContainer->get($id);
         }
         throw new NotFoundException("No entry was found for '$id'.");
+    }
+
+    /**
+     * @inheritDoc
+     */
+    #[\Override]
+    public function has(string $id): bool
+    {
+        return \array_any($this->containers, fn($container) => $container->has($id));
     }
 }

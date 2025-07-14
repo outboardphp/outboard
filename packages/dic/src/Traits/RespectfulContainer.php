@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpIncompatibleReturnTypeInspection */
+<?php
+
+/** @noinspection PhpIncompatibleReturnTypeInspection */
 
 declare(strict_types=1);
 

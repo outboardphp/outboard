@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedMethodInspection */
 /** @noinspection PhpInappropriateInheritDocUsageInspection */
 

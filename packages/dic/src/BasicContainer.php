@@ -32,12 +32,6 @@ class BasicContainer implements ComposableContainer, \ArrayAccess
         $this->resolvers = $resolvers;
     }
 
-    public function has(string $id): bool
-    {
-        /** @var Resolver $resolver */
-        return \array_any($this->resolvers, fn($resolver) => $resolver->has($id));
-    }
-
     /**
      * @inheritDoc
      * @template T
@@ -47,11 +41,17 @@ class BasicContainer implements ComposableContainer, \ArrayAccess
      */
     public function get(string $id)
     {
-        /** @var Resolver $resolver */
-        $found =\array_find($this->resolvers, fn($resolver) => $resolver->has($id));
-        if ($found) {
+        /** @var Resolver $found */
+        $found = \array_find($this->resolvers, fn($resolver) => $resolver->has($id));
+        if ($found !== null) {
             return $found->resolve($id)->instance;
         }
         throw new NotFoundException("No entry was found for '$id'.");
+    }
+
+    public function has(string $id): bool
+    {
+        /** @var Resolver $resolver */
+        return \array_any($this->resolvers, fn($resolver) => $resolver->has($id));
     }
 }
