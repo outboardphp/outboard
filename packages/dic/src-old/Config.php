@@ -8,55 +8,6 @@ use Aspire\Di\Exception\ContainerException;
 
 class Config
 {
-    /** @var Definition[] */
-    protected $rules = [];
-
-    /**
-     * @param DefinitionProvider[] $ruleProviders
-     * @param bool $autowiring
-     */
-    public function __construct(
-        protected array $ruleProviders = [],
-        protected bool $autowiring = true,
-    ) {
-        foreach ($ruleProviders as $provider) {
-            if (!($provider instanceof DefinitionProvider)) {
-                throw new \InvalidArgumentException(
-                    'Invalid rule provider: ' . \get_class($provider)
-                );
-            }
-        }
-    }
-
-    /**
-     * Fetch rules from all registered providers, checking for collisions
-     *
-     * @return Config
-     * @throws Exception\ContainerException on invalid providers/rules or rule collisions
-     */
-    public function load(): static
-    {
-        foreach ($this->ruleProviders as $provider) {
-            $class = \get_class($provider);
-            if (!($provider instanceof DefinitionProvider)) {
-                throw new Exception\ContainerException("Invalid rule provider: instance of $class");
-            }
-
-            foreach ($provider->rules() as $rule) {
-                $ruleId = static::isRegex($rule->id)
-                    ? $rule->id // don't touch it
-                    : static::normalizeName($rule->id);
-
-                if (isset($this->rules[$ruleId])) {
-                    throw new Exception\ContainerException("Rule collision in $class: $ruleId is already defined");
-                }
-                $this->rules[$ruleId] = $rule;
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * Returns the rule that will be applied to the class $id during make().
      *
@@ -97,28 +48,5 @@ class Config
         }
         // if we get here, return the default rule if it's set
         return $this->rules['*'] ?? new Definition('empty');
-    }
-
-    public function isAutowiring(): bool
-    {
-        return $this->autowiring;
-    }
-
-    /**
-     * @param string $name
-     * @return string lowercased classname without leading backslash
-     */
-    protected static function normalizeName($name)
-    {
-        return \strtolower(\ltrim($name, '\\'));
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    protected static function isRegex($name)
-    {
-        return $name[0] === '/' && $name[-1] === '/';
     }
 }

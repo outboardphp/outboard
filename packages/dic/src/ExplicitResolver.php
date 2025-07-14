@@ -15,10 +15,10 @@ class ExplicitResolver implements Resolver
 
     public function has(string $id): bool
     {
-        return array_key_exists($id, $this->definitions);
+        return isset($this->definitions[$id]);
     }
 
-    public function resolve(string $id): ResolvedEntry
+    public function resolve(string $id): ResolvedFactory
     {
         if (!array_key_exists($id, $this->definitions)) {
             throw new Exception\NotFoundException("No explicit definition for '$id'.");
@@ -29,6 +29,6 @@ class ExplicitResolver implements Resolver
             : $definition;
         // If you have a Definition object, pass it; otherwise null
         $defObj = $definition instanceof Definition ? $definition : null;
-        return new ResolvedEntry($id, $instance, $defObj);
+        return new ResolvedFactory($id, $instance, $defObj);
     }
 }

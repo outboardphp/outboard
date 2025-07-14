@@ -2,7 +2,8 @@
 
 namespace Outboard\Di\Contracts;
 
-use Outboard\Di\ResolvedEntry;
+use Outboard\Di\ResolvedFactory;
+use Psr\Container\ContainerInterface;
 
 interface Resolver
 {
@@ -14,5 +15,5 @@ interface Resolver
     /**
      * Resolve the given id.
      */
-    public function resolve(string $id): ResolvedEntry;
+    public function resolve(string $id, ContainerInterface $container): ResolvedFactory;
 }

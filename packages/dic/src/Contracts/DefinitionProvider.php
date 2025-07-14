@@ -9,7 +9,7 @@ interface DefinitionProvider
     /**
      * Returns an array of DI definitions.
      *
-     * @return Definition[]
+     * @return array<string, Definition>
      */
     public function getDefinitions(): array;
 }

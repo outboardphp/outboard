@@ -4,14 +4,16 @@ namespace Outboard\Di;
 
 use Outboard\Di\Contracts\DefinitionProvider;
 use Outboard\Di\Contracts\Resolver;
+use Outboard\Di\Exception\ContainerException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
 class AutowiringResolver implements Resolver
 {
-    // Optionally accept config/definitions for autowiring exclusions, preferences, etc.
+    /**
+     * Optionally accepts config/definitions for autowiring exclusions, preferences, etc.
+     */
     public function __construct(
-        protected ContainerInterface $container,
         protected ?DefinitionProvider $definitions = null,
     ) {}
 
@@ -23,7 +25,7 @@ class AutowiringResolver implements Resolver
     /**
      * @throws ContainerExceptionInterface
      */
-    public function resolve(string $id): ResolvedEntry
+    public function resolve(string $id, ContainerInterface $container): ResolvedFactory
     {
         if (!class_exists($id)) {
             throw new Exception\NotFoundException("Cannot autowire '$id': class does not exist.");
@@ -40,20 +42,20 @@ class AutowiringResolver implements Resolver
                     $type = $param->getType();
                     if ($type && !$type->isBuiltin()) {
                         $depClass = $type->getName();
-                        $args[] = $this->container->get($depClass);
+                        $args[] = $container->get($depClass);
                     } elseif ($param->isDefaultValueAvailable()) {
                         $args[] = $param->getDefaultValue();
                     } else {
-                        throw new Exception\ContainerException("Cannot resolve parameter '{$param->getName()}' for '$id'.");
+                        throw new ContainerException("Cannot resolve parameter '{$param->getName()}' for '$id'.");
                     }
                 }
                 $instance = $reflection->newInstanceArgs($args);
             }
             // If you have a Definition object for autowiring, pass it; otherwise null
             $defObj = $this->definitions[$id] ?? null;
-            return new ResolvedEntry($id, $instance, $defObj instanceof Definition ? $defObj : null);
+            return new ResolvedFactory($id, $instance, $defObj instanceof Definition ? $defObj : null);
         } catch (\ReflectionException $e) {
-            throw new Exception\ContainerException("Autowiring failed for '$id': " . $e->getMessage(), 0, $e);
+            throw new ContainerException("Autowiring failed for '$id': " . $e->getMessage(), 0, $e);
         }
     }
 }
