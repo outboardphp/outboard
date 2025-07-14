@@ -13,4 +13,5 @@ This is a monorepo containing the framework, related packages, and app skeletons
 
 ## Packages
 - Framework [[path](https://github.com/outboardphp/outboard/tree/main/packages/framework)] [[repo](https://github.com/outboardphp/framework)]
-- Dependency Injection Container [[path](https://github.com/outboardphp/outboard/tree/main/packages/dic)] [[repo](https://github.com/outboardphp/di)]
+- PSR-11 Dependency Injection Container [[path](https://github.com/outboardphp/outboard/tree/main/packages/dic)] [[repo](https://github.com/outboardphp/di)]
+- Wake (PSR-14 Event Dispatcher) [[path](https://github.com/outboardphp/outboard/tree/main/packages/wake)] [[repo](https://github.com/outboardphp/wake)]
