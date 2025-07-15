@@ -2,7 +2,7 @@
 
 Currently targeting: PHP 8.4+
 
-Outboard is the working name for my new PHP framework that provides a SOLID foundation
+Outboard is a new PHP framework that provides a SOLID foundation
 for building modern web applications. It is designed to be modular, flexible, and
 easy to use, while adhering to the latest best practices in PHP development.
 
@@ -25,12 +25,7 @@ I'm building this because:
 ## Planning
 
 - Router: Symfony Routing component
-- DI (PSR-11):
-- Middleware:
-
-- ORM (data mapper): Level-2/Maphper
-- Templating engine: Level-2/Transphporm
-- Need to find good authentication and RBAC libs
+- Middleware pipeline:
 
 ## Contributing
 
