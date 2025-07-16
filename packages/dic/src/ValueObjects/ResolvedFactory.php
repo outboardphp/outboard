@@ -1,6 +1,6 @@
 <?php
 
-namespace Outboard\Di;
+namespace Outboard\Di\ValueObjects;
 
 class ResolvedFactory
 {

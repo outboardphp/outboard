@@ -4,6 +4,8 @@ namespace Outboard\Di;
 
 use Outboard\Di\Contracts\Resolver;
 use Outboard\Di\Exception\NotFoundException;
+use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObjects\ResolvedFactory;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
@@ -125,7 +127,7 @@ class ExplicitResolver implements Resolver
      */
     protected function makeClosure($id, $definition, $container)
     {
-        // No reflection happening in this class, so there are things we just can't check
+        // No reflection happening in this class, so there are things we just won't be able to check
 
         /**
          * Closure level 1

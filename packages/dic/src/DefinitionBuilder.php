@@ -4,36 +4,47 @@ declare(strict_types=1);
 
 namespace Outboard\Di;
 
+use Outboard\Di\Enums\Scope;
+use Outboard\Di\ValueObjects\Definition;
 class DefinitionBuilder
 {
-    protected Definition $rule;
-
-    public function __construct()
-    {
-        $this->rule = new Definition();
-    }
+    protected bool|Scope $singleton = false;
+    protected bool $strict = false;
+    protected mixed $substitute = null;
+    protected array $withParams = [];
+    protected array $singletonsInTree = [];
+    protected mixed $call = null;
+    protected array $tags = [];
 
     public function build(): Definition
     {
-        return $this->rule;
+        return new Definition(
+            singleton: $this->singleton,
+            strict: $this->strict,
+            substitute: $this->substitute,
+            withParams: $this->withParams,
+            singletonsInTree: $this->singletonsInTree,
+            call: $this->call,
+            tags: $this->tags,
+        );
     }
 
     /**
-     * Create instances using this rule as singletons within the container, or set a specific scope.
+     * Create instances using this rule as singletons within the container or set a specific scope.
      * Accepts true/false, 'request', or 'session'.
      */
-    public function singleton(bool|string $singleton = true): static
+    public function singleton(bool|Scope $singleton = true): static
     {
-        $this->rule->singleton = $singleton;
+        $this->singleton = $singleton;
         return $this;
     }
 
     /**
      * Prevent this rule from applying to child classes.
      */
-    public function strict(): static
+    public function strict(bool $strict = true): static
     {
-        $this->rule->strict = true;
+        $this->strict = $strict;
         return $this;
     }
 
@@ -42,9 +53,9 @@ class DefinitionBuilder
      * or the return value of a callable (factory).
      * Parameter typehints on a callable will be resolved by the container.
      */
-    public function substitute(string|callable|object $substitute): static
+    public function substitute(string|callable|object|null $substitute): static
     {
-        $this->rule->substitute = $substitute;
+        $this->substitute = $substitute;
         return $this;
     }
 
@@ -58,10 +69,10 @@ class DefinitionBuilder
     public function withParams(...$params): static
     {
         // If we were passed an array, unwrap it
-        if (is_array($params[0]) && count($params) === 1) {
-            $params = current($params) ?: [];
+        if (\is_array($params[0]) && \count($params) === 1) {
+            $params = \current($params) ?: [];
         }
-        $this->rule->withParams = $params;
+        $this->withParams = $params;
         return $this;
     }
 
@@ -71,7 +82,7 @@ class DefinitionBuilder
      */
     public function singletonsInTree(array $ids): static
     {
-        $this->rule->singletonsInTree = $ids;
+        $this->singletonsInTree = $ids;
         return $this;
     }
 
@@ -83,9 +94,9 @@ class DefinitionBuilder
      * If the callable returns an object, it is considered to be a decorator and the instance will be replaced
      * with the returned object as long as it is type-compatible with the original class.
      */
-    public function call(callable $callable): static
+    public function call(?callable $callable): static
     {
-        $this->rule->call = $callable;
+        $this->call = $callable;
         return $this;
     }
 
@@ -96,7 +107,7 @@ class DefinitionBuilder
      */
     public function tags(array $tags): static
     {
-        $this->rule->tags = $tags;
+        $this->tags = $tags;
         return $this;
     }
 }

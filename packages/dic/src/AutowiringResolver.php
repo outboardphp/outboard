@@ -5,6 +5,8 @@ namespace Outboard\Di;
 use Outboard\Di\Contracts\DefinitionProvider;
 use Outboard\Di\Contracts\Resolver;
 use Outboard\Di\Exception\ContainerException;
+use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObjects\ResolvedFactory;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
@@ -53,7 +55,7 @@ class AutowiringResolver implements Resolver
             }
             // If you have a Definition object for autowiring, pass it; otherwise null
             $defObj = $this->definitions[$id] ?? null;
-            return new ResolvedFactory($id, $instance, $defObj instanceof Definition ? $defObj : null);
+            return new ResolvedFactory($instance, $id, $defObj instanceof Definition ? $defObj : null);
         } catch (\ReflectionException $e) {
             throw new ContainerException("Autowiring failed for '$id': " . $e->getMessage(), 0, $e);
         }

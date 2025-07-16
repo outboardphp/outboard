@@ -2,7 +2,7 @@
 
 namespace Outboard\Di\Contracts;
 
-use Outboard\Di\Definition;
+use Outboard\Di\ValueObjects\Definition;
 
 interface DefinitionProvider
 {

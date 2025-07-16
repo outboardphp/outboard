@@ -6,6 +6,7 @@ namespace Outboard\Di;
 
 use Outboard\Di\Contracts\DefinitionProvider;
 use Outboard\Di\Exception\ContainerException;
+use Outboard\Di\ValueObjects\Definition;
 
 class CombinedDefinitionProvider implements DefinitionProvider
 {

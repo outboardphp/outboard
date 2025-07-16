@@ -1,15 +1,15 @@
 <?php
 
-declare(strict_types=1);
+namespace Outboard\Di\ValueObjects;
 
-namespace Outboard\Di;
+use Outboard\Di\Enums\Scope;
 
-class Definition
+readonly class Definition
 {
     /**
-     * @param bool|string $singleton Whether this class instance should be unique in the container.
-     *   String values supported are: 'prototype' (same as false), 'singleton' (same as true),
-     *   'request' (scoped to current request), 'session' (scoped to current session);
+     * @param bool|Scope $singleton Whether this class instance should be unique in the container.
+     *   Scope values supported are: Prototype (same as false), Singleton (same as true),
+     *   Request (scoped to current request), Session (scoped to current session);
      *   the latter two are mostly only useful in long-running application contexts.
      * @param bool $strict Whether to prevent this rule from applying to child classes.
      * @param string|callable|object|null $substitute The FQCN of the actual class to instantiate,
@@ -21,12 +21,12 @@ class Definition
      * @param string[] $tags An array of tags for service tagging.
      */
     public function __construct(
-        public bool|string $singleton = false,
+        public bool|Scope $singleton = false,
         public bool $strict = false,
-        public $substitute = null,
+        public mixed $substitute = null,
         public array $withParams = [],
         public array $singletonsInTree = [],
-        public $call = null,
+        public mixed $call = null,
         public array $tags = [],
     ) {}
 }

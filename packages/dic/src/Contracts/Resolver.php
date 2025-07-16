@@ -2,7 +2,7 @@
 
 namespace Outboard\Di\Contracts;
 
-use Outboard\Di\ResolvedFactory;
+use Outboard\Di\ValueObjects\ResolvedFactory;
 use Psr\Container\ContainerInterface;
 
 interface Resolver
