@@ -49,7 +49,7 @@ class AggregateDefinitionProvider implements DefinitionProvider
         $result = [];
         foreach ($definitionSets as $set) {
             foreach ($set as $id => $definition) {
-                if (preg_match($id, '') === false) {
+                if (@preg_match($id, '') === false) {
                     // $id is not a valid regex, so treat it as a class identifier.
                     // Yes, this means arbitrary strings will also be normalized to lowercase.
                     $id = static::normalizeId($id);

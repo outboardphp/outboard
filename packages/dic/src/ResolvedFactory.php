@@ -2,11 +2,11 @@
 
 namespace Outboard\Di;
 
-readonly class ResolvedFactory
+class ResolvedFactory
 {
     public function __construct(
-        public \Closure    $factory,
-        public ?string     $matchedDefinitionId = null,
-        public ?Definition $matchedDefinition = null,
+        public ?\Closure            $factory = null,
+        public readonly ?string     $definitionId = null,
+        public readonly ?Definition $definition = null,
     ) {}
 }

@@ -70,7 +70,7 @@ class Container implements ComposableContainer
         }
 
         $factory = $found->resolve($id, $this->parent ?? $this);
-        if ($factory->matchedDefinition->singleton) {
+        if ($factory->definition->singleton) {
             $this->instances[$id] = ($factory->factory)();
             return $this->instances[$id];
         }
