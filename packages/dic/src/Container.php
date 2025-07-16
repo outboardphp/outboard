@@ -64,17 +64,18 @@ class Container implements ComposableContainer
      */
     protected function resolve(string $id): mixed
     {
-        $found = \array_find($this->resolvers, fn($resolver) => $resolver->has($id));
-        if (!($found instanceof Resolver)) {
+        // Find a resolver that can resolve this id
+        $resolver = \array_find($this->resolvers, fn($resolver) => $resolver->has($id));
+        if (!($resolver instanceof Resolver)) {
             throw new NotFoundException("No entry was found for '$id'.");
         }
 
-        $factory = $found->resolve($id, $this->parent ?? $this);
-        if ($factory->definition->singleton) {
-            $this->instances[$id] = ($factory->factory)();
+        $resolution = $resolver->resolve($id, $this->parent ?? $this);
+        if ($resolution->definition->singleton) {
+            $this->instances[$id] = ($resolution->factory)();
             return $this->instances[$id];
         }
-        $this->factories[$id] = $factory->factory;
+        $this->factories[$id] = $resolution->factory;
         return $this->factories[$id]();
     }
 
