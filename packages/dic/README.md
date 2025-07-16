@@ -3,7 +3,7 @@
 This is an IoC/DI container library for PHP, usable on its own or as part of the Outboard Framework.
 
 ## Design principles
-- Respect SOLID principles, especially SRP, more than any other DIC library
+- Respect SOLID principles, especially SRP, more than most other DI libraries
 - Use a minimum of "magic", so that it is easy to understand
 - Be powerful, flexible, and feature-rich, yet also fast and efficient
 - Support a modular/layered architecture, allowing for simplified configuration by multiple packages
@@ -23,7 +23,7 @@ for me so I can spend more time on decision-making and writing code.
 The following libraries have aspects I really respect and plan to incorporate here:
 - [Dice](https://github.com/Level-2/Dice)
 - [Aura.Di](https://github.com/auraphp/Aura.Di)
-- [Auryn](https://github.com/rdlowrey/auryn)
+- [Auryn](https://github.com/rdlowrey/auryn) / [AmPHP Injector](https://github.com/amphp/injector)
 - [Caplet](https://github.com/pmjones/caplet)
 - [Capsule DI](https://github.com/capsulephp/di)
 - [Laminas DI](https://github.com/laminas/laminas-di)
