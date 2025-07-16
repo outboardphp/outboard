@@ -7,7 +7,7 @@ namespace Outboard\Di;
 use Outboard\Di\Contracts\DefinitionProvider;
 use Outboard\Di\Exception\ContainerException;
 
-class AggregateDefinitionProvider implements DefinitionProvider
+class CombinedDefinitionProvider implements DefinitionProvider
 {
     use Traits\NormalizesId; // in combine()
 
