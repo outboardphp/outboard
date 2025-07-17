@@ -1,4 +1,0 @@
-suites:
-    outboard_suite:
-        namespace: Outboard
-        psr4_prefix: Outboard

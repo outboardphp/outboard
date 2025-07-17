@@ -20,6 +20,7 @@
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.17.0",
+        "pestphp/pest": "^3.8",
         "phpcompatibility/php-compatibility": "@dev",
         "phpspec/phpspec": "@dev",
         "phpstan/phpstan": "^2.1",
@@ -59,13 +60,17 @@
     "autoload": {
         "psr-4": {
             "Outboard\\Di\\": "packages/dic/src/",
+            "Outboard\\Di\\Tests\\": "packages/dic/tests/",
             "Outboard\\Framework\\": "packages/framework/src/",
-            "Outboard\\Wake\\": "packages/wake/src/"
+            "Outboard\\Framework\\Tests\\": "packages/framework/tests/",
+            "Outboard\\Wake\\": "packages/wake/src/",
+            "Outboard\\Wake\\Tests\\": "packages/wake/tests/"
         }
     },
     "config": {
         "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "pestphp/pest-plugin": true
         },
         "minimum-stability": "dev",
         "prefer-stable": true,

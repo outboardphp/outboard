@@ -1,4 +1,0 @@
-suites:
-    outboard_di_suite:
-        namespace: Outboard\Di
-        psr4_prefix: Outboard\Di
