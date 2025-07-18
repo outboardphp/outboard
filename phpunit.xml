@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="packages/dic/vendor/phpunit/phpunit/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
 >
     <testsuites>
         <testsuite name="DI">
-            <directory suffix="Test.php">packages/dic/tests</directory>
+            <directory>packages/dic/tests</directory>
         </testsuite>
 
         <testsuite name="Framework">
-            <directory suffix="Test.php">packages/framework/tests</directory>
+            <directory>packages/framework/tests</directory>
         </testsuite>
 
-        <testsuite name="Wave">
-            <directory suffix="Test.php">packages/wave/tests</directory>
+        <testsuite name="Wake">
+            <directory>packages/wake/tests</directory>
         </testsuite>
     </testsuites>
     <source>
         <include>
             <directory>packages/dic/src</directory>
             <directory>packages/framework/src</directory>
-            <directory>packages/wave/src</directory>
+            <directory>packages/wake/src</directory>
         </include>
     </source>
+    <extensions>
+        <bootstrap class="DG\BypassFinals\PHPUnitExtension"/>
+    </extensions>
 </phpunit>

@@ -46,16 +46,20 @@ class CombinedDefinitionProvider implements DefinitionProvider
      */
     protected function combine($definitionSets)
     {
-        // This was extracted to its own function in anticipation that the strategy will likely change
         $result = [];
         foreach ($definitionSets as $set) {
             foreach ($set as $id => $definition) {
-                if (@preg_match($id, '') === false) {
-                    // $id is not a valid regex, so treat it as a class identifier.
-                    // Yes, this means arbitrary strings will also be normalized to lowercase.
+                set_error_handler(static function () { return true; });
+                try {
+                    $isRegex = preg_match($id, '') !== false;
+                } catch (\Throwable) {
+                    $isRegex = false;
+                } finally {
+                    restore_error_handler();
+                }
+                if (!$isRegex) {
                     $id = static::normalizeId($id);
                 }
-
                 if (isset($result[$id])) {
                     throw new ContainerException("Definition collision: $id is already defined");
                 }

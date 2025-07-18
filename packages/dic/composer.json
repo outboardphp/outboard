@@ -24,15 +24,20 @@
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "dg/bypass-finals": "^1.9",
+        "mockery/mockery": "^1.6",
         "pestphp/pest": "^3.8",
         "phpcompatibility/php-compatibility": "@dev",
+        "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-mockery": "^2.0",
         "squizlabs/php_codesniffer": "^3.13.2"
     },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
         },
         "minimum-stability": "dev",
         "prefer-stable": true,
