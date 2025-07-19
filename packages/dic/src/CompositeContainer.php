@@ -13,8 +13,9 @@ class CompositeContainer implements ContainerInterface
     /**
      * @param ContainerInterface[] $containers An array of containers to be used sequentially for resolving dependencies.
      */
-    public function __construct(protected array $containers = [])
-    {
+    public function __construct(
+        protected array $containers = [],
+    ) {
         if (empty($this->containers)) {
             throw new \InvalidArgumentException('At least one container must be provided to the composite container.');
         }
@@ -40,7 +41,7 @@ class CompositeContainer implements ContainerInterface
         if ($foundInContainer !== null) {
             return $foundInContainer->get($id);
         }
-        throw new NotFoundException("No entry was found for '$id'.");
+        throw new NotFoundException("No entry was found for '{$id}'.");
     }
 
     /**

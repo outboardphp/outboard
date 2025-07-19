@@ -82,6 +82,7 @@
     },
     "scripts": {
         "lint": "phpcs",
+        "fix": "php-cs-fixer fix",
         "monorepo:merge": "monorepo-builder merge",
         "monorepo:bump": "monorepo-builder bump-interdependency",
         "monorepo:validate": "monorepo-builder validate",

@@ -21,7 +21,7 @@ class AutowiringResolver implements Resolver
 
     public function has(string $id): bool
     {
-        return class_exists($id);
+        return \class_exists($id);
     }
 
     /**
@@ -29,8 +29,8 @@ class AutowiringResolver implements Resolver
      */
     public function resolve(string $id, ContainerInterface $container): ResolvedFactory
     {
-        if (!class_exists($id)) {
-            throw new Exception\NotFoundException("Cannot autowire '$id': class does not exist.");
+        if (!\class_exists($id)) {
+            throw new Exception\NotFoundException("Cannot autowire '{$id}': class does not exist.");
         }
         try {
             $reflection = new \ReflectionClass($id);
@@ -48,7 +48,7 @@ class AutowiringResolver implements Resolver
                     } elseif ($param->isDefaultValueAvailable()) {
                         $args[] = $param->getDefaultValue();
                     } else {
-                        throw new ContainerException("Cannot resolve parameter '{$param->getName()}' for '$id'.");
+                        throw new ContainerException("Cannot resolve parameter '{$param->getName()}' for '{$id}'.");
                     }
                 }
                 $instance = $reflection->newInstanceArgs($args);
@@ -57,7 +57,7 @@ class AutowiringResolver implements Resolver
             $defObj = $this->definitions[$id] ?? null;
             return new ResolvedFactory($instance, $id, $defObj instanceof Definition ? $defObj : null);
         } catch (\ReflectionException $e) {
-            throw new ContainerException("Autowiring failed for '$id': " . $e->getMessage(), 0, $e);
+            throw new ContainerException("Autowiring failed for '{$id}': {$e->getMessage()}", 0, $e);
         }
     }
 }

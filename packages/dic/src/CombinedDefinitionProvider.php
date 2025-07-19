@@ -12,19 +12,19 @@ class CombinedDefinitionProvider implements DefinitionProvider
 {
     use Traits\NormalizesId; // in combine()
 
-    /**
-     * @var array<string, Definition>
-     */
+    /** @var array<string, Definition> */
     protected array $definitions;
 
     /**
      * @param DefinitionProvider[] $providers
      */
-    public function __construct(protected array $providers) {}
+    public function __construct(
+        protected array $providers,
+    ) {}
 
     /**
-     * @return array<string, Definition>
      * @throws ContainerException
+     * @return array<string, Definition>
      */
     public function getDefinitions(): array
     {
@@ -41,27 +41,27 @@ class CombinedDefinitionProvider implements DefinitionProvider
 
     /**
      * @param array<int, array<string, Definition>> $definitionSets
-     * @return array<string, Definition>
      * @throws ContainerException
+     * @return array<string, Definition>
      */
     protected function combine($definitionSets)
     {
         $result = [];
         foreach ($definitionSets as $set) {
             foreach ($set as $id => $definition) {
-                set_error_handler(static function () { return true; });
+                \set_error_handler(static function () { return true; });
                 try {
-                    $isRegex = preg_match($id, '') !== false;
+                    $isRegex = \preg_match($id, '') !== false;
                 } catch (\Throwable) {
                     $isRegex = false;
                 } finally {
-                    restore_error_handler();
+                    \restore_error_handler();
                 }
                 if (!$isRegex) {
                     $id = static::normalizeId($id);
                 }
                 if (isset($result[$id])) {
-                    throw new ContainerException("Definition collision: $id is already defined");
+                    throw new ContainerException("Definition collision: {$id} is already defined");
                 }
                 $result[$id] = $definition;
             }

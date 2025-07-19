@@ -11,12 +11,13 @@ class TaggedListenerCollection
     /**
      * @param array<string, array<string, callable[]>> $listeners Takes the form of: ['tagName' => ['EventClass' => [callable, ...], ...], ...]
      */
-    public function __construct(private array $listeners = []) {}
+    public function __construct(
+        private array $listeners = [],
+    ) {}
 
     /**
      * Get listeners for the tag name specified.
      *
-     * @param string $tag
      * @return array<string, callable[]> listeners
      */
     public function getListenersForTag(string $tag): array
@@ -27,10 +28,8 @@ class TaggedListenerCollection
     /**
      * Adds a new listener to a given tag along with the event(s) it listens for.
      *
-     * @param string $tag
      * @param callable $listener Must accept one typehinted parameter: an event object
      * @throws \InvalidArgumentException if listener validation fails
-     * @return static
      */
     public function add(string $tag, callable $listener): static
     {
@@ -62,14 +61,13 @@ class TaggedListenerCollection
     /**
      * Detaches a listener from an event.
      *
-     * @param string $tag
      * @param callable $listener The exact listener that was originally attached
      * @param string $eventName The event it is listening for, if different from the parameter's typehint
      */
     public function remove(string $tag, callable $listener, string $eventName = ''): void
     {
         // Detach from manual event name
-        $key = array_search($listener, $this->listeners[$tag][$eventName]);
+        $key = \array_search($listener, $this->listeners[$tag][$eventName]);
         if ($key !== false) {
             unset($this->listeners[$tag][$eventName][$key]);
             // If there are no more listeners, remove the event
@@ -83,7 +81,7 @@ class TaggedListenerCollection
         foreach ($this->getCallableParamTypes($listener) as $paramType) {
             if (
                 !empty($this->listeners[$tag][$paramType])
-                && ($key = array_search($listener, $this->listeners[$tag][$paramType])) !== false
+                && ($key = \array_search($listener, $this->listeners[$tag][$paramType])) !== false
             ) {
                 unset($this->listeners[$tag][$paramType][$key]);
             }

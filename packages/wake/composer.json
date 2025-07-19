@@ -29,7 +29,6 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.17.0",
         "phpcompatibility/php-compatibility": "@dev",
-		"phpspec/phpspec": "@dev",
         "phpstan/phpstan": "^2.1",
         "squizlabs/php_codesniffer": "^3.13.2",
         "roave/security-advisories": "dev-latest"

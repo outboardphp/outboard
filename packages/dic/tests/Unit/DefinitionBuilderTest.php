@@ -2,13 +2,13 @@
 
 use Outboard\Di\DefinitionBuilder;
 
-describe('DefinitionBuilder', function () {
+describe('DefinitionBuilder', static function () {
     it('builds a Definition with default values', function () {
         $builder = new DefinitionBuilder();
 
         $def = $builder->build();
 
-        expect($def)->toBeInstanceOf(Outboard\Di\ValueObjects\Definition::class)
+        expect($def)->toBeInstanceOf(\Outboard\Di\ValueObjects\Definition::class)
             ->and($def->singleton)->toBeFalse()
             ->and($def->strict)->toBeFalse()
             ->and($def->substitute)->toBeNull()
@@ -25,7 +25,7 @@ describe('DefinitionBuilder', function () {
             ->substitute('SomeClass')
             ->withParams(['foo', 'bar'])
             ->singletonsInTree(['id1', 'id2'])
-            ->call(function () {})
+            ->call(static function () {})
             ->tags(['tag1', 'tag2']);
 
         $def = $builder->build();
@@ -39,4 +39,3 @@ describe('DefinitionBuilder', function () {
             ->and($def->tags)->toBe(['tag1', 'tag2']);
     });
 });
-

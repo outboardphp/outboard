@@ -3,7 +3,7 @@
 use Outboard\Di\CombinedDefinitionProvider;
 use Outboard\Di\ValueObjects\Definition;
 
-describe('CombinedDefinitionProvider', function () {
+describe('CombinedDefinitionProvider', static function () {
     it('combines definitions from multiple providers', function () {
         $def1 = new Definition();
         $def2 = new Definition();
@@ -27,8 +27,8 @@ describe('CombinedDefinitionProvider', function () {
 
         $combined = new CombinedDefinitionProvider([$provider1, $provider2]);
 
-        expect(fn() => $combined->getDefinitions())
-            ->toThrow(Outboard\Di\Exception\ContainerException::class);
+        expect(static fn() => $combined->getDefinitions())
+            ->toThrow(\Outboard\Di\Exception\ContainerException::class);
     });
 
     it('normalizes IDs that are not a regex', function () {
@@ -42,12 +42,15 @@ describe('CombinedDefinitionProvider', function () {
     });
 });
 
-class DefinitionProvider implements Outboard\Di\Contracts\DefinitionProvider
+class DefinitionProvider implements \Outboard\Di\Contracts\DefinitionProvider
 {
     /**
      * @param array<string, Definition> $definitions
      */
-    public function __construct(private readonly array $definitions = []) {}
+    public function __construct(
+        private readonly array $definitions = [],
+    ) {}
+
     public function getDefinitions(): array
     {
         return $this->definitions;

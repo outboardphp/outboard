@@ -23,7 +23,7 @@ class BetterFormatter
     {
         $groupName = strtolower($event->data(0));
 
-        switch ($groupName):
+        switch ($groupName) {
             case 'admin':
             case 'administrator':
                 $groupName = '<span style="color:#F00;">Administrator</span>';
@@ -33,7 +33,7 @@ class BetterFormatter
             case 'moderator':
                 $groupName = '<span style="color:#00A;">Moderator</span>';
                 break;
-        endswitch;
+        }
 
         $event->return($groupName);
     }

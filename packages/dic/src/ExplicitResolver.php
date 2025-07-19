@@ -13,9 +13,7 @@ class ExplicitResolver implements Resolver
 {
     use Traits\NormalizesId;
 
-    /**
-     * @var array<string, ResolvedFactory>
-     */
+    /** @var array<string, ResolvedFactory> */
     protected array $definitionLookupCache = [];
 
     /**
@@ -115,21 +113,21 @@ class ExplicitResolver implements Resolver
      */
     protected function notFound($id)
     {
-        return new NotFoundException("No definition found for identifier: $id");
+        return new NotFoundException("No definition found for identifier: {$id}");
     }
 
     /**
      * @param string $id
      * @param Definition $definition
      * @param ContainerInterface $container
-     * @return \Closure
      * @throws ContainerExceptionInterface
+     * @return \Closure
      */
     protected function makeClosure($id, $definition, $container)
     {
         // No reflection happening in this class, so there are things we just won't be able to check
 
-        /**
+        /*
          * Closure level 1
          */
         if (\is_string($definition->substitute) && \class_exists($definition->substitute)) {
@@ -145,7 +143,7 @@ class ExplicitResolver implements Resolver
             $closure = $definition->substitute;
         }
 
-        /**
+        /*
          * Closure level 2
          */
         if (!\is_object($definition->substitute) && $definition->withParams) {
@@ -166,7 +164,7 @@ class ExplicitResolver implements Resolver
             $closure = static function () use ($id) { return new $id(); };
         }
 
-        /**
+        /*
          * Closure level 3
          *
          * If there are post-construct calls to make, do them after constructing the object
@@ -194,8 +192,8 @@ class ExplicitResolver implements Resolver
      *
      * @param array $withParams The parameters to pass to the constructor.
      * @param ContainerInterface $container The container to resolve dependencies from.
-     * @return array A closure that returns the parameters to pass to the constructor.
      * @throws ContainerExceptionInterface
+     * @return array A closure that returns the parameters to pass to the constructor.
      */
     protected function getParams($withParams, $container)
     {

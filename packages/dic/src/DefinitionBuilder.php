@@ -6,14 +6,21 @@ namespace Outboard\Di;
 
 use Outboard\Di\Enums\Scope;
 use Outboard\Di\ValueObjects\Definition;
+
 class DefinitionBuilder
 {
     protected bool|Scope $singleton = false;
+
     protected bool $strict = false;
+
     protected mixed $substitute = null;
+
     protected array $withParams = [];
+
     protected array $singletonsInTree = [];
+
     protected mixed $call = null;
+
     protected array $tags = [];
 
     public function build(): Definition

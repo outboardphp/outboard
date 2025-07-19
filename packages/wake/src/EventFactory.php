@@ -19,7 +19,9 @@ use Psr\Container\ContainerInterface;
  */
 class EventFactory
 {
-    public function __construct(private ContainerInterface $dic) {}
+    public function __construct(
+        private ContainerInterface $dic,
+    ) {}
 
     public function __invoke(string $fqcn): mixed
     {

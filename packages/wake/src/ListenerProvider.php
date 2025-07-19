@@ -13,7 +13,9 @@ use Psr\EventDispatcher\ListenerProviderInterface;
  */
 readonly class ListenerProvider implements ListenerProviderInterface
 {
-    public function __construct(public ListenerCollection $listeners) {}
+    public function __construct(
+        public ListenerCollection $listeners,
+    ) {}
 
     /**
      * @return iterable<callable>

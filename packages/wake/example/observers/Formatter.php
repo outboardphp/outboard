@@ -12,9 +12,9 @@ use Outboard\Wake\Listener\Collection;
  */
 class Formatter
 {
-    public function __construct(private Dispatcher $dispatcher)
-    {
-    }
+    public function __construct(
+        private Dispatcher $dispatcher,
+    ) {}
 
     public function listeners(Collection $collection)
     {

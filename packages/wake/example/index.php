@@ -1,6 +1,6 @@
 <?php
 
-define('BASEDIR', dirname(__FILE__));
+define('BASEDIR', __DIR__);
 
 require_once BASEDIR . '/../vendor/autoload.php';
 
@@ -20,12 +20,12 @@ $listeners = new Collection();
 $hub = new Dispatcher(new Provider($listeners));
 
 // Initialize the default application listeners
-$formatter = new Formatter($hub);
+$formatter = new \Formatter($hub);
 $formatter->listeners($listeners);
 // Initialize plugin listeners--assigned to vars so we can mess with them later
-$fancyExamplePlugin = new FancyExamplePlugin();
-$betterFormatter = new BetterFormatter();
-$fancify = new Fancify();
+$fancyExamplePlugin = new \FancyExamplePlugin();
+$betterFormatter = new \BetterFormatter();
+$fancify = new \Fancify();
 $fancyExamplePlugin->listeners($listeners);
 $betterFormatter->listeners($listeners);
 $fancify->listeners($listeners);

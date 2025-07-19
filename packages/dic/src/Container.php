@@ -13,13 +13,13 @@ use Psr\Container\ContainerInterface;
 class Container implements ComposableContainer
 {
     /**
-     * @var array<string, mixed> $instances
+     * @var array<string, mixed>
      * An associative array to hold the instances by their string id.
      */
     protected array $instances = [];
 
     /**
-     * @var array<string, callable> $factories
+     * @var array<string, callable>
      * An associative array to hold the factories by their string id.
      * The callable should return an instance of the requested type.
      */
@@ -34,14 +34,16 @@ class Container implements ComposableContainer
     /**
      * @param Resolver[] $resolvers
      */
-    public function __construct(protected array $resolvers) {}
+    public function __construct(
+        protected array $resolvers,
+    ) {}
 
     /**
      * @inheritDoc
      * @template T
      * @param class-string<T>|string $id Identifier of the entry to look for.
-     * @return T|mixed|null
      * @throws ContainerException
+     * @return T|mixed|null
      * @phpstan-ignore method.templateTypeNotInParameter
      */
     public function get(string $id)
@@ -67,7 +69,7 @@ class Container implements ComposableContainer
         // Find a resolver that can resolve this id
         $resolver = \array_find($this->resolvers, fn($resolver) => $resolver->has($id));
         if (!($resolver instanceof Resolver)) {
-            throw new NotFoundException("No entry was found for '$id'.");
+            throw new NotFoundException("No entry was found for '{$id}'.");
         }
 
         $resolution = $resolver->resolve($id, $this->parent ?? $this);

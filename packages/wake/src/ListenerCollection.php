@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Outboard\Wake;
 
 use Technically\CallableReflection\CallableReflection;
-use Technically\CallableReflection\Parameters\TypeReflection;
 
 class ListenerCollection
 {
     /**
      * @param array<string, callable[]> $listeners Takes the form of: ['EventClass' => [callable, ...], ...]
      */
-    public function __construct(public array $listeners = []) {}
+    public function __construct(
+        public array $listeners = [],
+    ) {}
 
     /**
      * Adds a new listener to the collection.
@@ -52,7 +53,7 @@ class ListenerCollection
     public function remove(callable $listener, string $eventName = ''): void
     {
         // Detach from manual event name
-        $key = array_search($listener, $this->listeners[$eventName]);
+        $key = \array_search($listener, $this->listeners[$eventName]);
         if ($key !== false) {
             unset($this->listeners[$eventName][$key]);
             // If there are no more listeners, remove the event
@@ -66,7 +67,7 @@ class ListenerCollection
         foreach ($this->getCallableParamTypes($listener) as $paramType) {
             if (
                 !empty($this->listeners[$paramType])
-                && ($key = array_search($listener, $this->listeners[$paramType])) !== false
+                && ($key = \array_search($listener, $this->listeners[$paramType])) !== false
             ) {
                 unset($this->listeners[$paramType][$key]);
             }

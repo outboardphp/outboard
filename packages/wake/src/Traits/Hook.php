@@ -31,7 +31,7 @@ trait Hook
      */
     public function getResult(): array
     {
-        return end($this->results);
+        return \end($this->results);
     }
 
     /**
