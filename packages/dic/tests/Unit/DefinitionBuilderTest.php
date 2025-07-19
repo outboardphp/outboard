@@ -1,8 +1,10 @@
 <?php
 
+use Outboard\Di\DefinitionBuilder;
+
 describe('DefinitionBuilder', function () {
     it('builds a Definition with default values', function () {
-        $builder = new Outboard\Di\DefinitionBuilder();
+        $builder = new DefinitionBuilder();
 
         $def = $builder->build();
 
@@ -17,7 +19,7 @@ describe('DefinitionBuilder', function () {
     });
 
     it('can set all properties', function () {
-        $builder = new Outboard\Di\DefinitionBuilder()
+        $builder = new DefinitionBuilder()
             ->singleton()
             ->strict()
             ->substitute('SomeClass')
