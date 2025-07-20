@@ -8,6 +8,7 @@ on:
     workflows: ["Build"]
     types:
       - completed
+  workflow_dispatch:
 
 env:
   GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
