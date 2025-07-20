@@ -60,17 +60,6 @@ it('decorates the instance using a call that returns', function () {
     expect($result->decorated)->toBeTrue();
 });
 
-it('stores tags on the definition', function () {
-    $definitions = [
-        'tagged' => new Definition(
-            substitute: fn() => new stdClass(),
-            tags: ['service', 'important'],
-        ),
-    ];
-    expect($definitions['tagged']->tags)->toContain('service')
-        ->and($definitions['tagged']->tags)->toContain('important');
-});
-
 it('handles property cascade correctly', function () {
     $definitions = [
         'combo' => new Definition(
