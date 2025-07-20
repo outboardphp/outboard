@@ -127,73 +127,116 @@ class ExplicitResolver implements Resolver
     {
         // No reflection happening in this class, so there are things we just won't be able to check
 
-        /*
-         * Closure level 1
-         */
+        // Intent to substitute with the result of a callable short-circuits the remaining logic
+        // Callable supports params and post-call
+        if (\is_callable($definition->substitute)) {
+            $withParams = $this->addParams(($definition->substitute)(...), $definition, $container);
+            return $this->addPostCall($withParams, $definition, $container);
+        }
+
+        // Intent to substitute an existing object short-circuits the remaining logic
+        // Object supports post-call only
+        if (\is_object($definition->substitute)) {
+            return $this->addPostCall(
+                static function () use ($definition) { return $definition->substitute; },
+                $definition,
+                $container,
+            );
+        }
+
+        // Now, if the substitute is just a class name, swap it into $id
         if (\is_string($definition->substitute) && \class_exists($definition->substitute)) {
             // If the substitute is a class name, we'll instantiate that instead
             $id = $definition->substitute;
-
-        } elseif (\is_object($definition->substitute)) {
-            // If the substitute is an object, we assume it's a pre-existing instance
-            $closure = static function () use ($definition) { return $definition->substitute; };
-
-        } elseif (\is_callable($definition->substitute)) {
-            // If the substitute is a callable, we call it to get the instance
-            $closure = $definition->substitute;
         }
 
-        /*
-         * Closure level 2
-         */
-        if (!\is_object($definition->substitute) && $definition->withParams) {
-            // We can still resolve class names to instances
-            // NOTE: Cyclic dependencies are NOT supported in this resolver.
-            $params = $this->getParams($definition->withParams, $container);
-            $closure = static function () use ($id, $params) {
+        // At this point, expect the $id to be a class name.
+
+        // If the intent is to instantiate the container itself, and the container is a singleton,
+        // assume we want the existing one rather than a new container just for the object graph,
+        // therefore only post-call is supported
+        if ($definition->singleton && $id === $container::class) {
+            return $this->addPostCall(
+                static function () use ($container) { return $container; },
+                $definition,
+                $container,
+            );
+        }
+
+        $withParams = $this->addParams(
+            static function (...$params) use ($id) {
                 // Instantiate the class, passing constructor arguments
                 return new $id(...$params);
-            };
-        } elseif (!isset($closure) && $definition->singleton && $id === $container::class) {
-            // If we're trying to instantiate the container itself, and the container is a singleton,
-            // assume we want that rather than a new container just for the object graph
-            $closure = static function () use ($container) { return $container; };
+            },
+            $definition,
+            $container,
+        );
+        return $this->addPostCall($withParams, $definition, $container);
+    }
 
-        } elseif (!isset($closure)) {
-            // No constructor arguments, just make a basic closure
-            $closure = static function () use ($id) { return new $id(); };
+    /**
+     * If the definition has parameters, wrap the closure to pass them.
+     * This allows for dependency injection of parameters into the closure.
+     *
+     * @param \Closure $closure The closure that creates the object.
+     * @param Definition $definition The definition containing parameters.
+     * @param ContainerInterface $container The container to resolve dependencies from.
+     * @throws ContainerExceptionInterface from getParams()
+     * @return \Closure A closure that returns the object with parameters injected.
+     */
+    protected function addParams($closure, $definition, $container)
+    {
+        if (!$definition->withParams) {
+            // No parameters to pass, return the closure as is
+            return $closure;
         }
 
-        /*
-         * Closure level 3
-         *
-         * If there are post-construct calls to make, do them after constructing the object
-         */
-        if ($definition->call) {
-            $closure = static function () use ($closure, $definition, $container) {
-                // Construct the object using the original closure
-                $object = $closure();
+        // We can still resolve class names to instances
+        // NOTE: Cyclic dependencies are NOT supported in this resolver.
+        $params = $this->getParams($definition->withParams, $container);
+        return static function () use ($closure, $params) {
+            // Call the closure, passing arguments
+            return $closure(...$params);
+        };
+    }
 
-                // Call the closure and pass in our new object as well as the container
-                $return = ($definition->call)($object, $container);
-                // If the call returns something, we assume it's a decorator or reducer - replace the original object
-                if ($return !== null) {
-                    $object = $return;
-                }
-
-                return $object;
-            };
+    /**
+     * If the definition has a post-call, wrap the closure to call it after instantiation.
+     *
+     * @param \Closure $closure The closure that creates the object.
+     * @param Definition $definition The definition containing the post-call.
+     * @param ContainerInterface $container The container to resolve dependencies from.
+     * @return \Closure A closure that returns the object after calling the post-call.
+     */
+    protected function addPostCall($closure, $definition, $container)
+    {
+        if (!$definition->call) {
+            // No post-call, return the closure as is
+            return $closure;
         }
-        return $closure;
+
+        return static function () use ($closure, $definition, $container) {
+            // Construct the object using the original closure
+            $object = $closure();
+
+            // Call the closure and pass in our new object as well as the container
+            $return = ($definition->call)($object, $container);
+            // If the call returns something, we assume it's a decorator or reducer - replace the original object
+            if ($return !== null) {
+                $object = $return;
+            }
+
+            return $object;
+        };
     }
 
     /**
      * Resolve container id strings to actual parameters.
      *
-     * @param array $withParams The parameters to pass to the constructor.
-     * @param ContainerInterface $container The container to resolve dependencies from.
+     * @param mixed[] $withParams The parameters to pass to the constructor
+     * @param ContainerInterface $container The container to resolve dependencies from
      * @throws ContainerExceptionInterface
-     * @return array A closure that returns the parameters to pass to the constructor.
+     * @return mixed[] The original array with container ids resolved to actual instances
      */
     protected function getParams($withParams, $container)
     {
