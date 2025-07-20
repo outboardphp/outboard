@@ -21,7 +21,12 @@ class ExplicitResolver implements Resolver
      */
     public function __construct(
         protected array $definitions = [],
-    ) {}
+    ) {
+        // Normalize the definitions to ensure they are in a consistent format
+        foreach ($this->definitions as $id => $definition) {
+            $this->definitions[static::normalizeId($id)] = $definition;
+        }
+    }
 
     /**
      * Checks if this resolver is capable of resolving the given identifier.

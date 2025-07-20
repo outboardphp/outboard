@@ -78,3 +78,57 @@ it('handles property cascade correctly', function () {
         ->and($result1->x)->toBe(42)
         ->and($result1->decorated)->toBeTrue();
 });
+
+it('instantiates a real class id', function () {
+    $definitions = [
+        TestClass::class => new Definition(
+            withParams: ['Test Name', 123],
+        ),
+    ];
+    $container = new Container([
+        new ExplicitResolver($definitions),
+    ]);
+    $result = $container->get(TestClass::class);
+    expect($result)->toBeInstanceOf(TestClass::class)
+        ->and($result->name)->toBe('Test Name')
+        ->and($result->value)->toBe(123);
+});
+
+it('honors definition inheritance', function () {
+    $definitions = [
+        TestClass::class => new Definition(
+            withParams: ['Test Name', 123],
+        ),
+    ];
+    $container = new Container([
+        new ExplicitResolver($definitions),
+    ]);
+    $result = $container->get(AnotherTestClass::class);
+    expect($result)->toBeInstanceOf(AnotherTestClass::class)
+        ->and($result->name)->toBe('Test Name')
+        ->and($result->value)->toBe(123);
+});
+
+it('honors definition non-inheritance', function () {
+    $definitions = [
+        TestClass::class => new Definition(
+            strict: true,
+            withParams: ['Test Name', 123],
+        ),
+    ];
+    $container = new Container([
+        new ExplicitResolver($definitions),
+    ]);
+    expect(fn() => $container->get(AnotherTestClass::class))
+        ->toThrow(Outboard\Di\Exception\NotFoundException::class);
+});
+
+class TestClass
+{
+    public function __construct(
+        public string $name,
+        public int $value,
+    ) {}
+}
+
+class AnotherTestClass extends TestClass {}
