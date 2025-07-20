@@ -88,7 +88,7 @@
         "monorepo:validate": "monorepo-builder validate",
         "monorepo:alias": "monorepo-builder package-alias",
         "monorepo:release": "monorepo-builder release",
-        "test": "pest"
+        "test": "pest --compact"
     },
     "provide": {
         "psr/container-implementation": "1.0.0",

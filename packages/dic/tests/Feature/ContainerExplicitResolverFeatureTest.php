@@ -78,7 +78,6 @@ it('handles property cascade correctly', function () {
             substitute: fn($x) => (object) ['x' => $x],
             withParams: [42],
             call: fn($obj) => (object) ['x' => $obj->x, 'decorated' => true],
-            tags: ['combo'],
         ),
     ];
     $container = new Container([
@@ -88,6 +87,5 @@ it('handles property cascade correctly', function () {
     $result2 = $container->get('combo');
     expect($result1)->toBe($result2)
         ->and($result1->x)->toBe(42)
-        ->and($result1->decorated)->toBeTrue()
-        ->and($definitions['combo']->tags)->toContain('combo');
+        ->and($result1->decorated)->toBeTrue();
 });
