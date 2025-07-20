@@ -7,3 +7,5 @@ parameters:
         - packages/wake/src
     bootstrapFiles:
         - vendor/autoload.php
+    excludePaths:
+        - */Pest.php

@@ -81,8 +81,8 @@
         "sort-packages": true
     },
     "scripts": {
-        "lint": "phpcs",
-        "fix": "php-cs-fixer fix",
+        "lint": "phpcs && php-cs-fixer fix --dry-run",
+        "fix": "phpcbf && php-cs-fixer fix",
         "monorepo:merge": "monorepo-builder merge",
         "monorepo:bump": "monorepo-builder bump-interdependency",
         "monorepo:validate": "monorepo-builder validate",
