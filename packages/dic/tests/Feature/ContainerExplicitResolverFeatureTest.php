@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Outboard\Di\Container;
+use Outboard\Di\ContainerFactory;
 use Outboard\Di\ExplicitResolver;
 use Outboard\Di\ValueObjects\Definition;
 use Outboard\Di\Enums\Scope;
@@ -93,6 +94,61 @@ it('instantiates a real class id', function () {
         ->and($result->name)->toBe('Test Name')
         ->and($result->value)->toBe(123);
 });
+
+it('instantiates a real class id with a substitute class id', function () {
+    $definitions = [
+        TestClass::class => new Definition(
+            substitute: AnotherTestClass::class,
+            withParams: ['Test Name', 123],
+        ),
+    ];
+    $container = new Container([
+        new ExplicitResolver($definitions),
+    ]);
+    $result = $container->get(TestClass::class);
+    expect($result)->toBeInstanceOf(AnotherTestClass::class);
+});
+
+it('instantiates a real class id with a substitute arbitrary id', function () {
+    $defProv = new class implements \Outboard\Di\Contracts\DefinitionProvider {
+        public function getDefinitions(): array
+        {
+            return [
+                TestClass::class => new Definition(
+                    strict: true, // Required here to avoid circular reference
+                    substitute: 'another',
+                ),
+                'another' => new Definition(
+                    substitute: AnotherTestClass::class,
+                    withParams: ['Test Name', 123],
+                ),
+            ];
+        }
+    };
+    $container = new ContainerFactory($defProv, [ExplicitResolver::class])();
+    $result = $container->get(TestClass::class);
+    expect($result)->toBeInstanceOf(AnotherTestClass::class);
+});
+
+it('detects circular dependencies', function () {
+    $defProv = new class implements \Outboard\Di\Contracts\DefinitionProvider {
+        public function getDefinitions(): array
+        {
+            return [
+                TestClass::class => new Definition(
+                    substitute: 'another',
+                ),
+                'another' => new Definition(
+                    substitute: AnotherTestClass::class,
+                    withParams: ['Test Name', 123],
+                ),
+            ];
+        }
+    };
+    expect(fn() => new ContainerFactory($defProv, [ExplicitResolver::class])())
+        ->toThrow(Outboard\Di\Exception\ContainerException::class);
+});
+
 
 it('honors definition inheritance', function () {
     $definitions = [

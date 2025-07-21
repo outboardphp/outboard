@@ -12,12 +12,19 @@ use Psr\Container\ContainerInterface;
 
 class AutowiringResolver implements Resolver
 {
+    use Traits\NormalizesId;
+
     /**
-     * Optionally accepts config/definitions for autowiring exclusions, preferences, etc.
+     * @param array<string, Definition> $definitions
      */
     public function __construct(
-        protected ?DefinitionProvider $definitions = null,
-    ) {}
+        protected array $definitions = [],
+    ) {
+        // Normalize the definitions to ensure they are in a consistent format
+        foreach ($this->definitions as $id => $definition) {
+            $this->definitions[static::normalizeId($id)] = $definition;
+        }
+    }
 
     public function has(string $id): bool
     {

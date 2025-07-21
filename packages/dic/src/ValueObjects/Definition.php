@@ -7,6 +7,11 @@ use Outboard\Di\Enums\Scope;
 readonly class Definition
 {
     /**
+     * Note: The contents of each definition determine whether the resulting configuration can be compiled or not.
+     * If the definition is not compilable, it will be resolved at runtime and thus incur a performance penalty.
+     * Specifically, `substitute` must be a container id, FQCN, or a non-Closure callable if provided;
+     * and $call must be a non-Closure callable if provided.
+     *
      * @param bool|Scope $singleton Whether this class instance should be unique in the container.
      *   Scope values supported are: Prototype (same as false), Singleton (same as true),
      *   Request (scoped to current request), Session (scoped to current session);

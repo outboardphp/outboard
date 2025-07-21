@@ -149,9 +149,23 @@ class ExplicitResolver implements Resolver
             );
         }
 
-        // Now, if the substitute is just a class name, swap it into $id
-        if (\is_string($definition->substitute) && \class_exists($definition->substitute)) {
-            // If the substitute is a class name, we'll instantiate that instead
+        // Now, if the substitute is a string, we expect it to be a class name or an id of another definition.
+        if (\is_string($definition->substitute)) {
+            if ($container->has($definition->substitute)) {
+                return $this->addPostCall(
+                    static function () use ($definition, $container) {
+                        // Get the instance from the container
+                        return $container->get($definition->substitute);
+                    },
+                    $definition,
+                    $container,
+                );
+            }
+            if (!\class_exists($definition->substitute)) {
+                throw new NotFoundException(
+                    "Substitute '{$definition->substitute}' not found for definition '{$id}'",
+                );
+            }
             $id = $definition->substitute;
         }
 
