@@ -98,6 +98,7 @@ it('instantiates a real class id', function () {
 it('instantiates a real class id with a substitute class id', function () {
     $definitions = [
         TestClass::class => new Definition(
+            strict: true,
             substitute: AnotherTestClass::class,
             withParams: ['Test Name', 123],
         ),
