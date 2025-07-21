@@ -9,7 +9,7 @@ use Outboard\Di\ValueObjects\Definition;
 
 class DefinitionBuilder
 {
-    protected bool|Scope $singleton = false;
+    protected bool|Scope $shared = false;
 
     protected bool $strict = false;
 
@@ -20,7 +20,7 @@ class DefinitionBuilder
     protected array $withParams = [];
 
     /** @var string[] */
-    protected array $singletonsInTree = [];
+    protected array $sharedInTree = [];
 
     /** @var callable|null */
     protected mixed $call = null;
@@ -31,23 +31,23 @@ class DefinitionBuilder
     public function build(): Definition
     {
         return new Definition(
-            singleton: $this->singleton,
+            shared: $this->shared,
             strict: $this->strict,
             substitute: $this->substitute,
             withParams: $this->withParams,
-            singletonsInTree: $this->singletonsInTree,
+            sharedInTree: $this->sharedInTree,
             call: $this->call,
             tags: $this->tags,
         );
     }
 
     /**
-     * Create instances using this rule as singletons within the container or set a specific scope.
+     * Share instances using this rule within the container or set a specific scope.
      * Accepts true/false, 'request', or 'session'.
      */
-    public function singleton(bool|Scope $singleton = true): static
+    public function shared(bool|Scope $shared = true): static
     {
-        $this->singleton = $singleton;
+        $this->shared = $shared;
         return $this;
     }
 
@@ -89,12 +89,12 @@ class DefinitionBuilder
     }
 
     /**
-     * List container ids that are to be singletons within the current object graph.
+     * List container ids that are to be shared within the current object graph.
      * @param string[] $ids
      */
-    public function singletonsInTree(array $ids): static
+    public function sharedInTree(array $ids): static
     {
-        $this->singletonsInTree = $ids;
+        $this->sharedInTree = $ids;
         return $this;
     }
 

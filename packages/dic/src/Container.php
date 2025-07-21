@@ -48,11 +48,11 @@ class Container implements ComposableContainer
      */
     public function get(string $id)
     {
-        // Repeat singleton
+        // Cached shared instance
         if (isset($this->instances[$id])) {
             return $this->instances[$id];
         }
-        // Repeat non-singleton
+        // Cached non-shared instance
         if (isset($this->factories[$id])) {
             return $this->factories[$id]();
         }
@@ -76,7 +76,7 @@ class Container implements ComposableContainer
         if (!$resolution->definition || !$resolution->factory) {
             throw new ContainerException('Should not happen');
         }
-        if ($resolution->definition->singleton) {
+        if ($resolution->definition->shared) {
             $this->instances[$id] = ($resolution->factory)();
             return $this->instances[$id];
         }

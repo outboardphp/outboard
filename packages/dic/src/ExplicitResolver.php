@@ -177,10 +177,10 @@ class ExplicitResolver implements Resolver
 
         // At this point, expect the $id to be a class name.
 
-        // If the intent is to instantiate the container itself, and the container is a singleton,
+        // If the intent is to instantiate the container itself, and the container is shared,
         // assume we want the existing one rather than a new container just for the object graph,
         // therefore only post-call is supported
-        if ($definition->singleton && $id === $container::class) {
+        if ($definition->shared && $id === $container::class) {
             return $this->addPostCall(
                 static function () use ($container) { return $container; },
                 $definition,

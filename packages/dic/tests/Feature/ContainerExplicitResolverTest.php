@@ -10,7 +10,7 @@ use Outboard\Di\Enums\Scope;
 
 it('returns the same instance for singleton scope', function () {
     $definitions = [
-        'foo' => new Definition(singleton: true, substitute: fn() => new stdClass()),
+        'foo' => new Definition(shared: true, substitute: fn() => new stdClass()),
     ];
     $container = new Container([
         new ExplicitResolver($definitions),
@@ -22,7 +22,7 @@ it('returns the same instance for singleton scope', function () {
 
 it('returns different instances for prototype scope', function () {
     $definitions = [
-        'bar' => new Definition(singleton: false, substitute: fn() => (object) ['prop1' => 'val']),
+        'bar' => new Definition(shared: false, substitute: fn() => (object) ['prop1' => 'val']),
     ];
     $container = new Container([
         new ExplicitResolver($definitions),
@@ -64,7 +64,7 @@ it('decorates the instance using a call that returns', function () {
 it('handles property cascade correctly', function () {
     $definitions = [
         'combo' => new Definition(
-            singleton: Scope::Singleton,
+            shared: Scope::Singleton,
             substitute: fn($x) => (object) ['x' => $x],
             withParams: [42],
             call: fn($obj) => (object) ['x' => $obj->x, 'decorated' => true],
@@ -146,7 +146,7 @@ it('detects circular dependencies', function () {
             ];
         }
     };
-    expect(fn() => new ContainerFactory($defProv, [ExplicitResolver::class])())
+    expect(fn() => new ContainerFactory($defProv)())
         ->toThrow(Outboard\Di\Exception\ContainerException::class);
 });
 

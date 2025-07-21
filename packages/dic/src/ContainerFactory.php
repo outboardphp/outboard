@@ -15,7 +15,7 @@ class ContainerFactory
         protected ?DefinitionProvider $definitionProvider = null,
         protected array $resolvers = [
             ExplicitResolver::class,
-            AutowiringResolver::class,
+            // AutowiringResolver::class, // disabled until it's working
         ],
     ) {}
 
