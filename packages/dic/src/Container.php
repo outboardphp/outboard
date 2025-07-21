@@ -73,6 +73,9 @@ class Container implements ComposableContainer
         }
 
         $resolution = $resolver->resolve($id, $this->parent ?? $this);
+        if (!$resolution->definition || !$resolution->factory) {
+            throw new ContainerException('Should not happen');
+        }
         if ($resolution->definition->singleton) {
             $this->instances[$id] = ($resolution->factory)();
             return $this->instances[$id];

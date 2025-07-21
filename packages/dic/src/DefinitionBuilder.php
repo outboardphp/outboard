@@ -13,14 +13,19 @@ class DefinitionBuilder
 
     protected bool $strict = false;
 
+    /** @var string|callable|object|null */
     protected mixed $substitute = null;
 
+    /** @var mixed[] */
     protected array $withParams = [];
 
+    /** @var string[] */
     protected array $singletonsInTree = [];
 
+    /** @var callable|null */
     protected mixed $call = null;
 
+    /** @var string[] */
     protected array $tags = [];
 
     public function build(): Definition

@@ -12,6 +12,7 @@ use Psr\Container\ContainerInterface;
 class ExplicitResolver implements Resolver
 {
     use Traits\NormalizesId;
+    use Traits\TestsRegexSilently;
 
     /** @var array<string, ResolvedFactory> */
     protected array $definitionLookupCache = [];
@@ -60,6 +61,11 @@ class ExplicitResolver implements Resolver
         $this->has($id) || throw $this->notFound($id);
 
         $rf = $this->definitionLookupCache[$id];
+        if ($rf->definition === null) {
+            // This should never happen, but if it does, we throw an error
+            throw new NotFoundException('Should not happen');
+        }
+
         $rf->factory = $this->makeClosure($id, $rf->definition, $container);
         return $rf;
     }
@@ -92,8 +98,8 @@ class ExplicitResolver implements Resolver
             if (
                 // The current definition can apply to subclasses, and its id is a parent of our target class
                 ($definition->strict === false && \is_subclass_of($id, $defId))
-                // or, the id is a regex that matches our target id
-                || @\preg_match($defId, $id) === 1
+                // or the id is a regex that matches our target id
+                || static::testRegexSilently($defId, $id) === 1
             ) {
                 return new ResolvedFactory(
                     definitionId: $defId,

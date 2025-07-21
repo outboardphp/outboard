@@ -11,6 +11,7 @@ use Outboard\Di\ValueObjects\Definition;
 class CombinedDefinitionProvider implements DefinitionProvider
 {
     use Traits\NormalizesId; // in combine()
+    use Traits\TestsRegexSilently; // in combine()
 
     /** @var array<string, Definition> */
     protected array $definitions;
@@ -49,15 +50,7 @@ class CombinedDefinitionProvider implements DefinitionProvider
         $result = [];
         foreach ($definitionSets as $set) {
             foreach ($set as $id => $definition) {
-                \set_error_handler(static function () { return true; });
-                try {
-                    $isRegex = \preg_match($id, '') !== false;
-                } catch (\Throwable) {
-                    $isRegex = false;
-                } finally {
-                    \restore_error_handler();
-                }
-                if (!$isRegex) {
+                if (static::testRegexSilently($id) === false) {
                     $id = static::normalizeId($id);
                 }
                 if (isset($result[$id])) {
