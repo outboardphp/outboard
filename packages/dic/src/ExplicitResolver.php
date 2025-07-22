@@ -58,25 +58,24 @@ class ExplicitResolver implements Resolver
     public function resolve(string $id, ContainerInterface $container): ResolvedFactory
     {
         // prime the cache or error out
-        $this->has($id) || throw $this->notFound($id);
+        $this->has($id) or throw $this->notFound($id);
 
         $rf = $this->definitionLookupCache[$id];
+
         if ($rf->definition === null) {
-            // This should never happen, but if it does, we throw an error
             throw new NotFoundException('Should not happen');
         }
-
         $rf->factory = $this->makeClosure($id, $rf->definition, $container);
+
         return $rf;
     }
 
     /**
-     * Find the definition for the given identifier or throw an exception if not found.
-     * Returns an incomplete ResolvedFactory object containing only the matching definition.
+     * Find the definition for the given identifier.
      *
      * @param string $id
-     * @throws NotFoundException
-     * @return ResolvedFactory
+     * @throws NotFoundException if no definition is found
+     * @return ResolvedFactory incomplete object containing only the matching definition
      */
     protected function find($id)
     {
@@ -158,14 +157,11 @@ class ExplicitResolver implements Resolver
         // Now, if the substitute is a string, we expect it to be a class name or an id of another definition.
         if (\is_string($definition->substitute)) {
             if ($container->has($definition->substitute)) {
-                return $this->addPostCall(
-                    static function () use ($definition, $container) {
-                        // Get the instance from the container
-                        return $container->get($definition->substitute);
-                    },
-                    $definition,
-                    $container,
-                );
+                $closure = static function () use ($definition, $container) {
+                    // Get the instance from the container
+                    return $container->get($definition->substitute);
+                };
+                return $this->addPostCall($closure, $definition, $container);
             }
             if (!\class_exists($definition->substitute)) {
                 throw new NotFoundException(
@@ -181,21 +177,15 @@ class ExplicitResolver implements Resolver
         // assume we want the existing one rather than a new container just for the object graph,
         // therefore only post-call is supported
         if ($definition->shared && $id === $container::class) {
-            return $this->addPostCall(
-                static function () use ($container) { return $container; },
-                $definition,
-                $container,
-            );
+            $closure = static function () use ($container) { return $container; };
+            return $this->addPostCall($closure, $definition, $container);
         }
 
-        $withParams = $this->addParams(
-            static function (...$params) use ($id) {
-                // Instantiate the class, passing constructor arguments
-                return new $id(...$params);
-            },
-            $definition,
-            $container,
-        );
+        $closure = static function (...$params) use ($id) {
+            // Instantiate the class, passing constructor arguments
+            return new $id(...$params);
+        };
+        $withParams = $this->addParams($closure, $definition, $container);
         return $this->addPostCall($withParams, $definition, $container);
     }
 

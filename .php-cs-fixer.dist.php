@@ -197,8 +197,6 @@ return $config
         'simple_to_complex_string_variable' => true,
         // Simplify `if` control structures that return the boolean result of their condition.
         'simplified_if_return' => true,
-        // A return statement wishing to return `void` should not return `null`.
-        'simplified_null_return' => true,
         // Single-line comments must have proper spacing.
         'single_line_comment_spacing' => true,
         // Convert double quotes to single quotes for simple strings.
