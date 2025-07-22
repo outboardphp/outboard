@@ -20,7 +20,7 @@ describe('DefinitionBuilder', static function () {
 
     it('can set all properties', function () {
         $builder = new DefinitionBuilder()
-            ->singleton()
+            ->shared()
             ->strict()
             ->substitute('SomeClass')
             ->withParams(['foo', 'bar'])
