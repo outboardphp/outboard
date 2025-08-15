@@ -10,7 +10,7 @@ use Outboard\Di\Enums\Scope;
 
 it('returns the same instance for singleton scope', function () {
     $definitions = [
-        'foo' => new Definition(shared: true, substitute: fn() => new stdClass()),
+        'foo' => new Definition(shared: true, substitute: fn() => (object) []),
     ];
     $container = new Container([
         new ExplicitResolver($definitions),
@@ -49,8 +49,8 @@ it('passes withParams to the factory', function () {
 it('decorates the instance using a call that returns', function () {
     $definitions = [
         'qux' => new Definition(
-            substitute: fn() => new stdClass(),
-            call: fn($obj) => (object) ['decorated' => true],
+            substitute: fn() => (object) [],
+            call: fn() => (object) ['decorated' => true],
         ),
     ];
     $container = new Container([

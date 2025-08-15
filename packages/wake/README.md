@@ -39,6 +39,7 @@ Currently in the middle of a major refactoring so documentation and tests are in
 - https://github.com/pleets/php-event-dispatcher (if serialization is needed)
 - https://github.com/Superbalist/php-pubsub (drivers/adapters)
 - https://github.com/phly/phly-event-dispatcher (MWOP)
+- https://github.com/WyriHaximus/php-broadcast
 
 ## Install
 ```bash
