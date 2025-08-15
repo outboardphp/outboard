@@ -29,7 +29,7 @@
         "phpstan/phpstan-mockery": "^2.0",
         "roave/security-advisories": "dev-latest",
         "squizlabs/php_codesniffer": "^3.13.2",
-        "symplify/monorepo-builder": "^11.2"
+        "symplify/monorepo-builder": "^12.1.0"
     },
     "replace": {
         "outboardphp/basic-app-skeleton": "self.version",
