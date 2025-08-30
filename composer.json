@@ -10,6 +10,9 @@
         }
     ],
     "homepage": "https://github.com/outboardphp/outboard",
+    "support": {
+        "issues": "https://github.com/outboardphp/outboard/issues"
+    },
     "require": {
         "php": ">=8.4",
         "fig/event-dispatcher-util": "dev-master",
@@ -20,6 +23,7 @@
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "dg/bypass-finals": "^1.9",
+        "ergebnis/composer-normalize": "^2.48",
         "friendsofphp/php-cs-fixer": "^3.17.0",
         "mockery/mockery": "^1.6",
         "pestphp/pest": "^3.8",
@@ -37,27 +41,31 @@
         "outboardphp/framework": "self.version",
         "outboardphp/wake": "self.version"
     },
+    "provide": {
+        "psr/container-implementation": "1.0.0",
+        "psr/event-dispatcher-implementation": "1.0.0"
+    },
     "repositories": [
         {
+            "type": "path",
+            "url": "packages/dic",
             "options": {
                 "symlink": true
-            },
-            "type": "path",
-            "url": "packages/dic"
+            }
         },
         {
+            "type": "path",
+            "url": "packages/framework",
             "options": {
                 "symlink": true
-            },
-            "type": "path",
-            "url": "packages/framework"
+            }
         },
         {
+            "type": "path",
+            "url": "packages/wake",
             "options": {
                 "symlink": true
-            },
-            "type": "path",
-            "url": "packages/wake"
+            }
         }
     ],
     "autoload": {
@@ -73,6 +81,7 @@
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true,
             "pestphp/pest-plugin": true,
             "phpstan/extension-installer": true
         },
@@ -81,20 +90,13 @@
         "sort-packages": true
     },
     "scripts": {
-        "lint": "phpcs && php-cs-fixer fix --dry-run",
         "fix": "phpcbf && php-cs-fixer fix",
-        "monorepo:merge": "monorepo-builder merge",
-        "monorepo:bump": "monorepo-builder bump-interdependency",
-        "monorepo:validate": "monorepo-builder validate",
+        "lint": "phpcs && php-cs-fixer fix --dry-run",
         "monorepo:alias": "monorepo-builder package-alias",
+        "monorepo:bump": "monorepo-builder bump-interdependency",
+        "monorepo:merge": "monorepo-builder merge",
         "monorepo:release": "monorepo-builder release",
+        "monorepo:validate": "monorepo-builder validate",
         "test": "pest --compact"
-    },
-    "provide": {
-        "psr/container-implementation": "1.0.0",
-        "psr/event-dispatcher-implementation": "1.0.0"
-    },
-    "support": {
-        "issues": "https://github.com/outboardphp/outboard/issues"
     }
 }

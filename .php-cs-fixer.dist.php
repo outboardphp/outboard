@@ -41,8 +41,6 @@ return $config
         'ereg_to_preg' => true,
         // Add curly braces to indirect variables to make them clear to understand.
         'explicit_indirect_variable' => true,
-        // Converts implicit variables into explicit ones in double-quoted strings or heredoc syntax.
-        'explicit_string_variable' => true,
         // Order the flags in `fopen` calls, `b` and `t` must be last.
         'fopen_flag_order' => true,
         // The flags in `fopen` calls must omit `t`, and `b` must be omitted or included consistently.

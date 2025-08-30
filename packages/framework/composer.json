@@ -1,13 +1,17 @@
 {
     "name": "outboardphp/framework",
     "description": "Outboard is a general-purpose PHP app framework.",
-    "type": "library",
-    "keywords": ["php", "framework", "adr", "mvvm", "oop", "modular", "mvc"],
-    "homepage": "https://github.com/outboardphp/framework",
-    "support": {
-        "issues": "https://github.com/outboardphp/outboard/issues"
-    },
     "license": "MPL-2.0",
+    "type": "library",
+    "keywords": [
+        "php",
+        "framework",
+        "adr",
+        "mvvm",
+        "oop",
+        "modular",
+        "mvc"
+    ],
     "authors": [
         {
             "name": "Garrett Whitehorn",
@@ -15,6 +19,10 @@
             "role": "Lead Developer"
         }
     ],
+    "homepage": "https://github.com/outboardphp/framework",
+    "support": {
+        "issues": "https://github.com/outboardphp/outboard/issues"
+    },
     "require": {
         "php": ">=8.4",
         "outboardphp/di": "@dev",
@@ -22,19 +30,12 @@
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "ergebnis/composer-normalize": "^2.48",
         "phpcompatibility/php-compatibility": "@dev",
         "phpspec/phpspec": "@dev",
         "phpstan/phpstan": "^2.1",
-        "squizlabs/php_codesniffer": "^3.13.2",
-        "roave/security-advisories": "dev-latest"
-    },
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        },
-        "minimum-stability": "dev",
-        "prefer-stable": true,
-        "sort-packages": true
+        "roave/security-advisories": "dev-latest",
+        "squizlabs/php_codesniffer": "^3.13.2"
     },
     "repositories": [
         {
@@ -49,5 +50,14 @@
         "psr-4": {
             "Outboard\\Framework\\": "src/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true
+        },
+        "minimum-stability": "dev",
+        "prefer-stable": true,
+        "sort-packages": true
     }
 }
