@@ -22,7 +22,7 @@ describe('Container', static function () {
             ->toThrow(\Outboard\Di\Exception\NotFoundException::class);
     });
 
-    it('delegates get() to resolver', function () {
+    it('can get() items from a resolver', function () {
         $resolver = \Mockery::mock(Resolver::class);
         $resolver->shouldReceive('has')->andReturn(true);
         $resolver->shouldReceive('resolve')
@@ -37,12 +37,28 @@ describe('Container', static function () {
         expect($container->get('foo'))->toBe('bar');
     });
 
-    it('delegates has() to resolver', function () {
+    it('can use has() to check if items exist in any resolver', function () {
         $resolver = \Mockery::mock(Resolver::class);
         $resolver->shouldReceive('has')->andReturn(true);
 
         $container = new Container([$resolver]);
 
         expect($container->has('foo'))->toBeTrue();
+    });
+
+    it('can populate callable params and call it', function () {
+        $resolver = \Mockery::mock(Resolver::class);
+        $resolver->shouldReceive('has')->andReturn(true);
+        $resolver->shouldReceive('resolve')
+            ->andReturn(new \Outboard\Di\ValueObjects\ResolvedFactory(
+                static fn() => (object) ['str' => '!'],
+                'stdClass',
+                new \Outboard\Di\ValueObjects\Definition(),
+            ));
+
+        $container = new Container([$resolver]);
+        $closure = fn(stdClass $something, int $num, $string) => $something->str . "bar$num$string";
+
+        expect($container->call($closure, ['num' => 1, 2 => 'baz']))->toBe('!bar1baz');
     });
 });

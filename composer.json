@@ -97,6 +97,6 @@
         "monorepo:merge": "monorepo-builder merge",
         "monorepo:release": "monorepo-builder release",
         "monorepo:validate": "monorepo-builder validate",
-        "test": "pest --compact"
+        "test": "pest --compact --display-deprecations --display-phpunit-deprecations"
     }
 }
