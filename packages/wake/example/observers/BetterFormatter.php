@@ -1,7 +1,6 @@
 <?php
 
-use Outboard\Wake\NamedEvent;
-use Outboard\Wake\Listener\Collection;
+use Outboard\Wake\ListenerCollection;
 
 /**
  * An example Wake Listener
@@ -12,16 +11,16 @@ use Outboard\Wake\Listener\Collection;
  */
 class BetterFormatter
 {
-    public function listeners(Collection $collection)
+    public function listeners(ListenerCollection $collection)
     {
-        return $collection
-            ->add([$this, 'onFormatGroup'], 'formatGroup')
-            ->add([$this, 'onFormatDate'], 'formatDate');
+        $collection
+            ->add([$this, 'onFormatGroup'])
+            ->add([$this, 'onFormatDate']);
     }
 
-    public function onFormatGroup(NamedEvent $event)
+    public function onFormatGroup(object $event)
     {
-        $groupName = strtolower($event->data(0));
+        $groupName = strtolower($event->group ?? '');
 
         switch ($groupName) {
             case 'admin':
@@ -35,11 +34,11 @@ class BetterFormatter
                 break;
         }
 
-        $event->return($groupName);
+        return $groupName;
     }
 
-    public function onFormatDate(NamedEvent $event)
+    public function onFormatDate(object $event)
     {
-        $event->return(date('F j, Y h:i:s A T', $event->data(0)));
+        return isset($event->date) ? date('F j, Y h:i:s A T', $event->date) : '';
     }
 }

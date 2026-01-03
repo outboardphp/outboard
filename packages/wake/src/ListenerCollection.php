@@ -89,6 +89,7 @@ class ListenerCollection
         foreach ($param->getTypes() as $paramType) {
             if ($paramType->isObject()) {
                 yield $paramType->getType();
+                continue;
             }
             if ($paramType->isClassRequirement()) {
                 yield $paramType->getClassRequirement();

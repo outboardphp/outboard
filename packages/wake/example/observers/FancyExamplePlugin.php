@@ -1,7 +1,6 @@
 <?php
 
-use Outboard\Wake\NamedEvent;
-use Outboard\Wake\Listener\Collection;
+use Outboard\Wake\ListenerCollection;
 
 /**
  * An example Wake Listener
@@ -12,19 +11,19 @@ use Outboard\Wake\Listener\Collection;
  */
 class FancyExamplePlugin
 {
-    public function listeners(Collection $collection)
+    public function listeners(ListenerCollection $collection)
     {
-        return $collection
-            ->add([$this, 'onFormatMessage'], 'formatMessage');
+        $collection->add([$this, 'onFormatMessage']);
     }
 
-    public function onFormatMessage(NamedEvent $event)
+    public function onFormatMessage(object $event)
     {
-        $message = strip_tags($event->data(0));
+        $message = isset($event->message) ? $event->message : '';
+        $message = strip_tags($message);
         $message = preg_replace('/\[b\](.+?)\[\/b\]/is', '<span style="font-weight:bold">$1</span>', $message);
         $message = preg_replace('/\[u\](.+?)\[\/u\]/is', '<span style="text-decoration:underline">$1</span>', $message);
         $message = preg_replace('/\[url=([^\[\]]+)\](.+?)\[\/url\]/is', '<a href="$1">$2</a>', $message);
         $message = preg_replace('/\[url\](.+?)\[\/url\]/is', '<a href="$1">$1</a>', $message);
-        $event->return(nl2br($message));
+        return nl2br($message);
     }
 }

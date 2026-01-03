@@ -1,8 +1,6 @@
 <?php
 
-use Outboard\Wake\Dispatcher;
-use Outboard\Wake\NamedEvent;
-use Outboard\Wake\Listener\Collection;
+use Outboard\Wake\ListenerCollection;
 
 /**
  * A default Wake Listener
@@ -12,51 +10,52 @@ use Outboard\Wake\Listener\Collection;
  */
 class Formatter
 {
-    public function __construct(
-        private Dispatcher $dispatcher,
-    ) {}
-
-    public function listeners(Collection $collection)
+    public function listeners(ListenerCollection $collection)
     {
-        return $collection
-            ->add([$this, 'formatUsername'], 'formatUsername')
-            ->add([$this, 'formatGroup'], 'formatGroup')
-            ->add([$this, 'formatDate'], 'formatDate')
-            ->add([$this, 'formatMessage'], 'formatMessage')
-            ->add([$this, 'onCreatePost'], 'createPost');
+        // Register listeners for stdClass events (or a custom event class if you prefer)
+        $collection
+            ->add([$this, 'formatUsername'])
+            ->add([$this, 'formatGroup'])
+            ->add([$this, 'formatDate'])
+            ->add([$this, 'formatMessage'])
+            ->add([$this, 'onCreatePost']);
     }
 
-    public function formatUsername(NamedEvent $event)
+    public function formatUsername(object $event): string
     {
-        $event->return($event->data(0));
+        return $event->username ?? '';
     }
 
-    public function formatGroup(NamedEvent $event)
+    public function formatGroup(object $event): string
     {
-        $event->return($event->data(0));
+        return $event->group ?? '';
     }
 
-    public function formatMessage(NamedEvent $event)
+    public function formatMessage(object $event): string
     {
-        $event->return(nl2br($event->data(0)));
+        return isset($event->message) ? nl2br($event->message) : '';
     }
 
-    public function formatDate(NamedEvent $event)
+    public function formatDate(object $event): string
     {
-        $event->return($event->data(0));
+        return isset($event->date) ? date('Y-m-d H:i:s', $event->date) : '';
     }
 
-    public function onCreatePost(NamedEvent $event)
+    public function onCreatePost(object $event): string
     {
-        $event->return('<div style="padding: 9px 16px;border:1px solid #EEE;margin-bottom:16px;">'
-             . '<strong>Posted by</strong> '
-             . $this->dispatcher->dispatch(new NamedEvent('formatUsername', [$event->data('username')], $this))->return()
-             . ' ('
-             . $this->dispatcher->dispatch(new NamedEvent('formatGroup', [$event->data('group')], $this))->return()
-             . ')<br /><strong>Posted Date</strong> '
-             . $this->dispatcher->dispatch(new NamedEvent('formatDate', [$event->data('date')], $this))->return()
-             . '<br />'
-             . $this->dispatcher->dispatch(new NamedEvent('formatMessage', [$event->data('message')], $this))->return()
-             . '</div>');
+        // Compose the post using the dispatcher to call other formatters
+        // (Assume the dispatcher is globally accessible or injected if needed)
+        $username = $this->formatUsername($event);
+        $group = $this->formatGroup($event);
+        $date = $this->formatDate($event);
+        $message = $this->formatMessage($event);
+        return '<div style="padding: 9px 16px;border:1px solid #EEE;margin-bottom:16px;">'
+            . '<strong>Posted by</strong> '
+            . $username
+            . ' (' . $group . ')<br /><strong>Posted Date</strong> '
+            . $date
+            . '<br />'
+            . $message
+            . '</div>';
     }
 }
