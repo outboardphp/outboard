@@ -3,13 +3,12 @@
 namespace Outboard\Di;
 
 use Outboard\Di\Contracts\DefinitionProvider;
-use Outboard\Di\Contracts\Resolver;
 use Psr\Container\ContainerExceptionInterface;
 
 class ContainerFactory
 {
     /**
-     * @param class-string<Resolver>[] $resolvers
+     * @param class-string<AbstractResolver>[] $resolvers
      */
     public function __construct(
         protected ?DefinitionProvider $definitionProvider = null,
@@ -48,7 +47,7 @@ class ContainerFactory
      * This is useful to catch circular dependencies
      * or missing definitions before the container is used.
      * @param string[] $defIds
-     * @param Resolver[] $resolvers
+     * @param AbstractResolver[] $resolvers
      * @throws ContainerExceptionInterface
      * @return void
      */

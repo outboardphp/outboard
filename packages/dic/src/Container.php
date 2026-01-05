@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Outboard\Di;
 
 use Outboard\Di\Contracts\ComposableContainer;
-use Outboard\Di\Contracts\Resolver;
 use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Exception\NotFoundException;
 use Psr\Container\ContainerInterface;
@@ -34,7 +33,7 @@ class Container implements ComposableContainer
     protected ?ContainerInterface $parent;
 
     /**
-     * @param Resolver[] $resolvers
+     * @param AbstractResolver[] $resolvers
      */
     public function __construct(
         protected array $resolvers,
@@ -88,26 +87,33 @@ class Container implements ComposableContainer
             // If we made it here, we need to resolve from the container
             // But first, we have to make sure we're dealing with a class name
             $paramClasses = \array_filter($param->getTypes(), static fn($type) => $type->isClassName());
-            $paramName = $param->getName();
-            if (empty($paramClasses) && !$param->isOptional()) {
-                throw new ContainerException("Required parameter '$paramName' must be manually supplied or typed with a class name.");
-            }
-            foreach ($paramClasses as $type) {
-                // Go with the first class name we can use
-                try {
-                    $value = $this->resolve($type->getType());
-                } catch (NotFoundException) {
-                    continue;
+
+            if (empty($paramClasses)) {
+                if (!$param->isOptional()) {
+                    throw new ContainerException("Required parameter '$paramName' must be manually supplied or typed with a class name.");
                 }
-                $param = $value;
-                continue 2;
-            }
-            /** @phpstan-var ParameterReflection $param */
-            if ($param->isOptional()) {
                 $param = null;
                 continue;
             }
-            throw new ContainerException("Unable to resolve parameter '$paramName'.");
+
+            $resolved = false;
+            foreach ($paramClasses as $type) {
+                // Go with the first class name we can use
+                try {
+                    $param = $this->resolve($type->getType());
+                    $resolved = true;
+                    break;
+                } catch (NotFoundException) {
+                    continue;
+                }
+            }
+            if (!$resolved) {
+                /** @phpstan-var ParameterReflection $param */
+                if (!$param->isOptional()) {
+                    throw new ContainerException("Unable to resolve parameter '$paramName'.");
+                }
+                $param = null;
+            }
         }
 
         return $callable(...$params);
@@ -136,7 +142,7 @@ class Container implements ComposableContainer
         }
 
         $resolution = $resolver->resolve($id, $this->parent ?? $this);
-        if (!$resolution->definition || !$resolution->factory) {
+        if (!$resolution->factory) {
             throw new ContainerException('Should not happen');
         }
         if ($resolution->definition->shared) {

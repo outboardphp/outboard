@@ -170,7 +170,7 @@ return $config
         // Fixes casing of PHPDoc tags.
         'phpdoc_tag_casing' => true,
         // Docblocks should only be used on structural elements.
-        'phpdoc_to_comment' => true,
+        'phpdoc_to_comment' => ['ignored_tags' => ['todo', 'var']],
         // PHPDoc should start and end with content, excluding the very first and last line of the docblocks.
         'phpdoc_trim' => true,
         // Removes extra blank lines after summary and after description in PHPDoc.

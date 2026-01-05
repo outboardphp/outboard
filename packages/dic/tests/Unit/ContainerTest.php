@@ -1,11 +1,11 @@
 <?php
 
 use Outboard\Di\Container;
-use Outboard\Di\Contracts\Resolver;
+use Outboard\Di\AbstractResolver;
 
 describe('Container', static function () {
     it('can be constructed with a Resolver', function () {
-        $resolver = \Mockery::mock(Resolver::class);
+        $resolver = \Mockery::mock(AbstractResolver::class);
 
         $container = new Container([$resolver]);
 
@@ -13,7 +13,7 @@ describe('Container', static function () {
     });
 
     it('throws NotFoundException if no Resolver can resolve id', function () {
-        $resolver = \Mockery::mock(Resolver::class);
+        $resolver = \Mockery::mock(AbstractResolver::class);
         $resolver->shouldReceive('has')->andReturn(false);
 
         $container = new Container([$resolver]);
@@ -23,7 +23,7 @@ describe('Container', static function () {
     });
 
     it('can get() items from a resolver', function () {
-        $resolver = \Mockery::mock(Resolver::class);
+        $resolver = \Mockery::mock(AbstractResolver::class);
         $resolver->shouldReceive('has')->andReturn(true);
         $resolver->shouldReceive('resolve')
             ->andReturn(new \Outboard\Di\ValueObjects\ResolvedFactory(
@@ -38,7 +38,7 @@ describe('Container', static function () {
     });
 
     it('can use has() to check if items exist in any resolver', function () {
-        $resolver = \Mockery::mock(Resolver::class);
+        $resolver = \Mockery::mock(AbstractResolver::class);
         $resolver->shouldReceive('has')->andReturn(true);
 
         $container = new Container([$resolver]);
@@ -47,7 +47,7 @@ describe('Container', static function () {
     });
 
     it('can populate callable params and call it', function () {
-        $resolver = \Mockery::mock(Resolver::class);
+        $resolver = \Mockery::mock(AbstractResolver::class);
         $resolver->shouldReceive('has')->andReturn(true);
         $resolver->shouldReceive('resolve')
             ->andReturn(new \Outboard\Di\ValueObjects\ResolvedFactory(

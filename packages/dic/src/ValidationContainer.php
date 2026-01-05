@@ -2,7 +2,6 @@
 
 namespace Outboard\Di;
 
-use Outboard\Di\Contracts\Resolver;
 use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Exception\NotFoundException;
 use Psr\Container\ContainerInterface;
@@ -15,7 +14,7 @@ class ValidationContainer implements ContainerInterface
     protected array $resolutionStack = [];
 
     /**
-     * @param Resolver[] $resolvers
+     * @param AbstractResolver[] $resolvers
      */
     public function __construct(
         protected array $resolvers,
@@ -32,7 +31,7 @@ class ValidationContainer implements ContainerInterface
     {
         // Find a resolver that can resolve this id
         $resolver = \array_find($this->resolvers, fn($resolver) => $resolver->has($id));
-        if (!($resolver instanceof Resolver)) {
+        if (!($resolver instanceof AbstractResolver)) {
             throw new NotFoundException("No resolver was found for '{$id}' during validation.");
         }
 

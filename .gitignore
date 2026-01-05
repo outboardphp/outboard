@@ -4,3 +4,4 @@ composer.lock
 node_modules
 .docker/dbdata
 .php-cs-fixer.cache
+other/
