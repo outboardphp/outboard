@@ -57,7 +57,7 @@ it('decorates the instance using a call that returns', function () {
         new ExplicitResolver($definitions),
     ]);
     $result = $container->get('qux');
-    // @phpstan-ignore-next-line
+
     expect($result->decorated)->toBeTrue();
 });
 

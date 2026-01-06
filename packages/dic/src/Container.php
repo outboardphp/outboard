@@ -41,11 +41,9 @@ class Container implements ComposableContainer
 
     /**
      * @inheritDoc
-     * @template T
+     * @template T of object
      * @param class-string<T>|string $id Identifier of the entry to look for.
-     * @throws ContainerException
-     * @return T|mixed|null
-     * @phpstan-ignore method.templateTypeNotInParameter
+     * @return ($id is class-string<T> ? T : mixed)
      */
     public function get(string $id)
     {
@@ -92,7 +90,8 @@ class Container implements ComposableContainer
                 if (!$param->isOptional()) {
                     throw new ContainerException("Required parameter '$paramName' must be manually supplied or typed with a class name.");
                 }
-                $param = null;
+                // Use the default value (will be null if no default was specified)
+                $param = $param->getDefaultValue();
                 continue;
             }
 
@@ -112,7 +111,8 @@ class Container implements ComposableContainer
                 if (!$param->isOptional()) {
                     throw new ContainerException("Unable to resolve parameter '$paramName'.");
                 }
-                $param = null;
+                // Use the default value (will be null if no default was specified)
+                $param = $param->getDefaultValue();
             }
         }
 

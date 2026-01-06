@@ -45,7 +45,11 @@ abstract class AbstractResolver
         // Normalize the definitions to ensure they are in a consistent format
         $normalized = [];
         foreach ($this->definitions as $id => $definition) {
-            $normalized[static::normalizeId($id)] = $definition;
+            // Don't normalize regex patterns or the catch-all
+            if ($id !== '*' && static::testRegexSilently($id) === false) {
+                $id = static::normalizeId($id);
+            }
+            $normalized[$id] = $definition;
         }
         $this->definitions = $normalized;
     }
