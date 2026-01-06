@@ -39,7 +39,12 @@ jobs:
             echo "base=$BASE" >> $GITHUB_OUTPUT
             echo "head=HEAD" >> $GITHUB_OUTPUT
           else
-            echo "base=${{ github.event.before }}" >> $GITHUB_OUTPUT
+            BEFORE="${{ github.event.before }}"
+            if ! git cat-file -e "$BEFORE" 2>/dev/null; then
+              echo "base=HEAD~1" >> $GITHUB_OUTPUT
+            else
+              echo "base=$BEFORE" >> $GITHUB_OUTPUT
+            fi
             echo "head=${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
@@ -56,7 +61,7 @@ jobs:
       - name: Check for PHP changes
         id: php
         run: |
-          PHP_PATTERN='\.php$|composer\.|phpunit\.xml|phpstan\.neon'
+          PHP_PATTERN='\.php$|composer\.|phpunit\.xml|phpstan\.neon|Pest\.php'
           if git diff --name-only ${{ steps.diff-range.outputs.base }} ${{ steps.diff-range.outputs.head }} | grep -E "$PHP_PATTERN"; then
             echo "changed=true" >> $GITHUB_OUTPUT
           else
