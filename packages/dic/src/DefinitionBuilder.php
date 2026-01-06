@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Outboard\Di;
 
 use Outboard\Di\Enums\Scope;
