@@ -2,6 +2,7 @@
 
 namespace Outboard\Di;
 
+use Outboard\Di\Contracts\CacheInterface;
 use Outboard\Di\Contracts\ComposableContainer;
 use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Exception\NotFoundException;
@@ -12,17 +13,9 @@ use Technically\CallableReflection\Parameters\ParameterReflection;
 class Container implements ComposableContainer
 {
     /**
-     * @var array<string, mixed>
-     * An associative array to hold the instances by their string id.
+     * Manages caching of shared instances and non-shared factories.
      */
-    protected array $instances = [];
-
-    /**
-     * @var array<string, callable>
-     * An associative array to hold the factories by their string id.
-     * The callable should return an instance of the requested type.
-     */
-    protected array $factories = [];
+    protected CacheInterface $cache;
 
     /**
      * Holds a ref to the parent container if this is a child, for
@@ -32,10 +25,14 @@ class Container implements ComposableContainer
 
     /**
      * @param AbstractResolver[] $resolvers
+     * @param CacheInterface|null $cache Optional cache instance (creates default if not provided)
      */
     public function __construct(
         protected array $resolvers,
-    ) {}
+        ?CacheInterface $cache = null,
+    ) {
+        $this->cache = $cache ?? new InstanceCache();
+    }
 
     /**
      * @inheritDoc
@@ -46,12 +43,12 @@ class Container implements ComposableContainer
     public function get(string $id)
     {
         // Cached shared instance
-        if (isset($this->instances[$id])) {
-            return $this->instances[$id];
+        if ($this->cache->hasShared($id)) {
+            return $this->cache->getShared($id);
         }
         // Cached non-shared instance
-        if (isset($this->factories[$id])) {
-            return $this->factories[$id]();
+        if ($this->cache->hasFactory($id)) {
+            return $this->cache->getFactory($id)();
         }
 
         // First-time resolution
@@ -144,10 +141,12 @@ class Container implements ComposableContainer
             throw new ContainerException('Should not happen');
         }
         if ($resolution->definition->shared) {
-            $this->instances[$id] = ($resolution->factory)();
-            return $this->instances[$id];
+            $instance = ($resolution->factory)();
+            $this->cache->setShared($id, $instance);
+            return $instance;
         }
-        $this->factories[$id] = $resolution->factory;
-        return $this->factories[$id]();
+        $factory = $resolution->factory;
+        $this->cache->setFactory($id, $factory);
+        return $factory();
     }
 }
