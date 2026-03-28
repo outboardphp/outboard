@@ -27,7 +27,7 @@ class RegexPatternMatcher
      */
     protected function testSilently($pattern, $subject = '')
     {
-        \set_error_handler(static function () { return true; });
+        \set_error_handler(static fn () => true);
 
         try {
             $isRegex = \preg_match($pattern, $subject);

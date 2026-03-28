@@ -100,8 +100,6 @@ class AutowiringResolver extends AbstractResolver
             $withParams[$name] = $type->getName();
         }
         $params = $this->getParams($withParams, $container);
-        return static function () use ($callable, $params) {
-            return $callable(...$params);
-        };
+        return static fn () => $callable(...$params);
     }
 }

@@ -2,11 +2,16 @@
 
 namespace Outboard\Di;
 
+use Outboard\Di\Contracts\SubstitutionResolverInterface;
+use Outboard\Di\Enums\SubstitutionMode;
 use Outboard\Di\Matching\DefinitionMatcher;
 use Outboard\Di\Exception\NotFoundException;
 use Outboard\Di\Support\DefinitionIdNormalizer;
+use Outboard\Di\Support\PostCallDecorator;
+use Outboard\Di\Substitution\SubstitutionResolverChain;
 use Outboard\Di\ValueObjects\Definition;
 use Outboard\Di\ValueObjects\ResolvedFactory;
+use Outboard\Di\ValueObjects\SubstitutionResolution;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
@@ -42,6 +47,8 @@ abstract class AbstractResolver
         protected array $definitions = [],
         protected DefinitionIdNormalizer $definitionIdNormalizer = new DefinitionIdNormalizer(),
         protected DefinitionMatcher $definitionMatcher = new DefinitionMatcher(),
+        protected SubstitutionResolverInterface $substitutionResolver = new SubstitutionResolverChain(),
+        protected PostCallDecorator $postCallDecorator = new PostCallDecorator(),
     ) {
         // Normalize the definitions to ensure they are in a consistent format
         $normalized = [];
@@ -114,67 +121,62 @@ abstract class AbstractResolver
      */
     protected function makeClosure($id, $definition, $container)
     {
-        $closure = null;
+        $substitution = $this->substitutionResolver->resolve($id, $definition, $container);
 
-        // Intent to substitute with the result of a callable short-circuits the remaining logic
-        // Callable supports params and post-call
-        if (\is_callable($definition->substitute)) {
-            $closure = $this->callableAddParams(($definition->substitute)(...), $definition, $container);
-        } elseif (\is_object($definition->substitute)) {
-            // Intent to substitute an existing object short-circuits the remaining logic
-            // Object supports post-call only
-            $closure = static function () use ($definition) { return $definition->substitute; };
-        } else {
-            $targetId = $id;
+        $closure = match ($substitution->mode) {
+            SubstitutionMode::Callable
+                => $this->resolveCallableSubstitution($substitution, $definition, $container),
+            SubstitutionMode::Raw
+                => $this->resolveRawSubstitution($substitution),
+            SubstitutionMode::Constructor
+                => $this->resolveConstructorSubstitution($substitution, $definition, $container),
+            default
+                => throw new NotFoundException('Unknown substitution mode encountered.'),
+        };
 
-            // Now, if the substitute is a string, we expect it to be a class name or an id of another definition.
-            if (\is_string($definition->substitute)) {
-                [$closure, $targetId] = $this->resolveStringSubstitute(
-                    $id,
-                    $definition->substitute,
-                    $container,
-                );
-            }
-
-            // At this point, expect the $targetId to be a class name.
-            /** @var class-string $targetId */
-
-            if ($closure === null) {
-                $closure = $this->buildInstantiationClosure($targetId, $definition, $container);
-            }
-        }
-
-        return $this->addPostCall($closure, $definition, $container);
+        return $this->postCallDecorator->decorate($closure, $definition, $container);
     }
 
     /**
-     * Resolve a string substitute to either a container-backed closure or a class-string target id.
-     *
-     * @param string $definitionId
-     * @param string $substitute
-     * @param ContainerInterface $container
-     * @throws NotFoundException
-     * @return array{0: ?\Closure, 1: string}
+     * @throws ContainerExceptionInterface
+     * @return callable
      */
-    protected function resolveStringSubstitute($definitionId, $substitute, $container)
+    protected function resolveCallableSubstitution(SubstitutionResolution $substitution, $definition, $container)
     {
-        if ($container->has($substitute)) {
-            return [
-                static function () use ($substitute, $container) {
-                    // Get the instance from the container
-                    return $container->get($substitute);
-                },
-                $definitionId,
-            ];
+        if ($substitution->factory === null) {
+            throw new NotFoundException('Missing callable factory for substitution.');
         }
 
-        if (!\class_exists($substitute)) {
-            throw new NotFoundException(
-                "Substitute '{$substitute}' not found for definition '{$definitionId}'",
-            );
+        return $this->callableAddParams($substitution->factory, $definition, $container);
+    }
+
+    /**
+     * @return \Closure
+     * @throws NotFoundException
+     */
+    protected function resolveRawSubstitution(SubstitutionResolution $substitution)
+    {
+        if ($substitution->factory === null) {
+            throw new NotFoundException('Missing raw factory for substitution.');
         }
 
-        return [null, $substitute];
+        return $substitution->factory instanceof \Closure
+            ? $substitution->factory
+            : ($substitution->factory)(...);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws \ReflectionException
+     * @return callable
+     */
+    protected function resolveConstructorSubstitution(SubstitutionResolution $substitution, $definition, $container)
+    {
+        if ($substitution->targetId === null) {
+            throw new NotFoundException('Missing constructor target for substitution.');
+        }
+
+        return $this->buildInstantiationClosure($substitution->targetId, $definition, $container);
     }
 
     /**
@@ -193,7 +195,7 @@ abstract class AbstractResolver
         // assume we want the existing one rather than a new container just for the object graph,
         // therefore only post-call is supported
         if ($definition->shared && $targetId === $container::class) {
-            return static function () use ($container) { return $container; };
+            return static fn () => $container;
         }
 
         $factory = static fn(...$params) => new $targetId(...$params);
@@ -220,40 +222,8 @@ abstract class AbstractResolver
         // We can still resolve class names to instances
         // NOTE: Cyclic dependencies are NOT supported in this resolver.
         $params = $this->getParams($definition->withParams, $container);
-        return static function () use ($callable, $params) {
-            // Call the closure, passing arguments
-            return $callable(...$params);
-        };
-    }
-
-    /**
-     * If the definition has a post-call, wrap the closure to call it after instantiation.
-     *
-     * @param callable $callable The closure that creates the object.
-     * @param Definition $definition The definition containing the post-call.
-     * @param ContainerInterface $container The container to resolve dependencies from.
-     * @return \Closure A closure that returns the object after calling the post-call.
-     */
-    protected function addPostCall($callable, $definition, $container)
-    {
-        if (!$definition->call) {
-            // No post-call, return the closure as is
-            return $callable instanceof \Closure ? $callable : $callable(...);
-        }
-
-        return static function () use ($callable, $definition, $container) {
-            // Construct the object using the original closure
-            $object = $callable();
-
-            // Call the closure and pass in our new object as well as the container
-            $return = ($definition->call)($object, $container);
-            // If the call returns something, we assume it's a decorator or reducer - replace the original object
-            if ($return !== null) {
-                $object = $return;
-            }
-
-            return $object;
-        };
+        // Call the closure, passing arguments
+        return static fn () => $callable(...$params);
     }
 
     /**
