@@ -1,22 +1,13 @@
 <?php
 
 use Outboard\Di\Container;
-use Outboard\Di\AbstractResolver;
+use Outboard\Di\Resolver;
 use Outboard\Di\ValueObjects\Definition;
 use Outboard\Di\ValueObjects\ResolvedFactory;
 
 describe('Container', static function () {
     it('can be constructed with a Resolver', function () {
-        $resolver = new class extends AbstractResolver {
-            protected function callableAddParams($callable, $definition, $container) {
-                return $callable;
-            }
-            protected function constructorAddParams($closure, $id, $definition, $container) {
-                return $closure;
-            }
-        };
-
-        $container = new Container([$resolver]);
+        $container = new Container([new Resolver()]);
 
         expect($container)->toBeInstanceOf(Container::class);
     });
@@ -30,34 +21,14 @@ describe('Container', static function () {
     });
 
     it('throws NotFoundException if no Resolver can resolve id', function () {
-        $resolver = new class extends AbstractResolver {
-            protected function callableAddParams($callable, $definition, $container) {
-                return $callable;
-            }
-            protected function constructorAddParams($closure, $id, $definition, $container) {
-                return $closure;
-            }
-            public function has(string $id): bool {
-                return false;
-            }
-        };
-
-        $container = new Container([$resolver]);
+        $container = new Container([new Resolver()]);
 
         expect(static fn() => $container->get('foo'))
             ->toThrow(\Outboard\Di\Exception\NotFoundException::class);
     });
 
     it('can set a parent container', function () {
-        $resolver = new class extends AbstractResolver {
-            protected function callableAddParams($callable, $definition, $container) {
-                return $callable;
-            }
-            protected function constructorAddParams($closure, $id, $definition, $container) {
-                return $closure;
-            }
-        };
-        $container = new Container([$resolver]);
+        $container = new Container([new Resolver()]);
 
         $parentContainer = new class implements \Psr\Container\ContainerInterface {
             public function has(string $id): bool { return false; }
@@ -70,15 +41,7 @@ describe('Container', static function () {
     });
 
     it('throws when setting parent container twice', function () {
-        $resolver = new class extends AbstractResolver {
-            protected function callableAddParams($callable, $definition, $container) {
-                return $callable;
-            }
-            protected function constructorAddParams($closure, $id, $definition, $container) {
-                return $closure;
-            }
-        };
-        $container = new Container([$resolver]);
+        $container = new Container([new Resolver()]);
 
         $parent1 = new class implements \Psr\Container\ContainerInterface {
             public function has(string $id): bool { return false; }
@@ -96,13 +59,7 @@ describe('Container', static function () {
     });
 
     it('throws if resolver returns null factory', function () {
-        $resolver = new class extends AbstractResolver {
-            protected function callableAddParams($callable, $definition, $container) {
-                return $callable;
-            }
-            protected function constructorAddParams($closure, $id, $definition, $container) {
-                return $closure;
-            }
+        $resolver = new class extends Resolver {
             public function has(string $id): bool {
                 return true;
             }

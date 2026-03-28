@@ -6,20 +6,20 @@ use Outboard\Di\ValueObjects\Definition;
 
 describe('AutowiringResolver', function () {
     it('has() returns true for existing classes', function () {
-        $resolver = new AutowiringResolver();
+        $resolver = AutowiringResolver::create();
 
         expect($resolver->has(stdClass::class))->toBeTrue();
     });
 
     it('has() returns false for non-existent classes', function () {
-        $resolver = new AutowiringResolver();
+        $resolver = AutowiringResolver::create();
 
         expect($resolver->has('NonExistentClass'))->toBeFalse();
     });
 
     it('autowires a simple class constructor', function () {
         $definitions = [];
-        $resolver = new AutowiringResolver($definitions);
+        $resolver = AutowiringResolver::create($definitions);
         $container = new Container([$resolver]);
 
         $result = $container->get(SimpleAutowiredClass::class);
@@ -29,7 +29,7 @@ describe('AutowiringResolver', function () {
     });
 
     it('autowires nested dependencies', function () {
-        $resolver = new AutowiringResolver();
+        $resolver = AutowiringResolver::create();
         $container = new Container([$resolver]);
 
         $result = $container->get(NestedDependency::class);
@@ -45,7 +45,7 @@ describe('AutowiringResolver', function () {
                 withParams: ['explicit value'],
             ),
         ];
-        $resolver = new AutowiringResolver($definitions);
+        $resolver = AutowiringResolver::create($definitions);
         $container = new Container([$resolver]);
 
         $result = $container->get(MixedParamsClass::class);
@@ -61,7 +61,7 @@ describe('AutowiringResolver', function () {
                 withParams: ['name' => 'named value'],
             ),
         ];
-        $resolver = new AutowiringResolver($definitions);
+        $resolver = AutowiringResolver::create($definitions);
         $container = new Container([$resolver]);
 
         $result = $container->get(MixedParamsClass::class);
@@ -76,7 +76,7 @@ describe('AutowiringResolver', function () {
                 substitute: fn(stdClass $obj) => $obj,
             ),
         ];
-        $resolver = new AutowiringResolver($definitions);
+        $resolver = AutowiringResolver::create($definitions);
         $container = new Container([$resolver]);
 
         $result = $container->get('callable');
@@ -90,7 +90,7 @@ describe('AutowiringResolver', function () {
                 substitute: fn(stdClass|array $param) => $param,
             ),
         ];
-        $resolver = new AutowiringResolver($definitions);
+        $resolver = AutowiringResolver::create($definitions);
         $container = new Container([$resolver]);
 
         expect(fn() => $container->get('callable'))
@@ -101,7 +101,7 @@ describe('AutowiringResolver', function () {
         $definitions = [
             BuiltinTypeClass::class => new Definition(),
         ];
-        $resolver = new AutowiringResolver($definitions);
+        $resolver = AutowiringResolver::create($definitions);
         $container = new Container([$resolver]);
 
         expect(fn() => $container->get(BuiltinTypeClass::class))
@@ -109,7 +109,7 @@ describe('AutowiringResolver', function () {
     });
 
     it('uses default value for builtin types', function () {
-        $resolver = new AutowiringResolver();
+        $resolver = AutowiringResolver::create();
         $container = new Container([$resolver]);
 
         $result = $container->get(DefaultValueClass::class);
@@ -128,7 +128,7 @@ describe('AutowiringResolver', function () {
                 withParams: ['obj' => 'my_object'],
             ),
         ];
-        $resolver = new AutowiringResolver($definitions);
+        $resolver = AutowiringResolver::create($definitions);
         $container = new Container([$resolver]);
 
         $result = $container->get(WithContainerRef::class);
@@ -137,7 +137,7 @@ describe('AutowiringResolver', function () {
     });
 
     it('handles classes with no constructor', function () {
-        $resolver = new AutowiringResolver();
+        $resolver = AutowiringResolver::create();
         $container = new Container([$resolver]);
 
         $result = $container->get(stdClass::class);
@@ -153,7 +153,7 @@ describe('AutowiringResolver', function () {
                 },
             ),
         ];
-        $resolver = new AutowiringResolver($definitions);
+        $resolver = AutowiringResolver::create($definitions);
         $container = new Container([$resolver]);
 
         $result = $container->get('closure');

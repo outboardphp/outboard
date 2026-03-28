@@ -1,7 +1,7 @@
 <?php
 
 use Outboard\Di\Container;
-use Outboard\Di\ExplicitResolver;
+use Outboard\Di\Resolver;
 use Outboard\Di\ValueObjects\Definition;
 
 describe('Resolver with regex and catch-all patterns', function () {
@@ -14,7 +14,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 substitute: fn() => (object) ['type' => 'service'],
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
         $container = new Container([$resolver]);
 
         /** @var object{type: string} $result */
@@ -32,7 +32,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 substitute: fn() => (object) ['type' => 'repository'],
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
         $container = new Container([$resolver]);
 
         /** @var object{type: string} $userRepo */
@@ -56,7 +56,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 substitute: fn() => (object) ['type' => 'generic'],
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
         $container = new Container([$resolver]);
 
         /** @var object{type: string} $specific */
@@ -74,7 +74,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 substitute: fn() => (object) ['type' => 'catch-all'],
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
         $container = new Container([$resolver]);
 
         $result = $container->get(stdClass::class);
@@ -91,7 +91,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 substitute: fn() => (object) ['type' => 'fallback'],
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
         $container = new Container([$resolver]);
 
         /** @var object{type: string} $result */
@@ -109,7 +109,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 substitute: fn() => (object) ['type' => 'catch-all'],
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
         $container = new Container([$resolver]);
 
         /** @var object{type: string} $specific */
@@ -126,7 +126,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 substitute: fn() => (object) ['matched' => true],
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
         $container = new Container([$resolver]);
 
         expect($container->has('serviceFoo'))->toBeTrue()
@@ -139,7 +139,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 substitute: fn() => (object) ['matched' => true],
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
         $container = new Container([$resolver]);
 
         expect($container->has('serviceFoo'))->toBeTrue()
@@ -152,7 +152,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 // No substitute, so only matches existing classes
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
 
         expect($resolver->has(stdClass::class))->toBeTrue()
             ->and($resolver->has('random-string-id'))->toBeFalse();
@@ -164,7 +164,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 substitute: fn() => (object) ['type' => 'service'],
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
         $container = new Container([$resolver]);
 
         // Should match because IDs are normalized to lowercase (unless regex)
@@ -183,7 +183,7 @@ describe('Resolver with regex and catch-all patterns', function () {
                 substitute: fn() => (object) ['matched' => true],
             ),
         ];
-        $resolver = new ExplicitResolver($definitions);
+        $resolver = new Resolver($definitions);
 
         // Regex patterns should match case-sensitively
         expect($resolver->has('MyService'))->toBeTrue()

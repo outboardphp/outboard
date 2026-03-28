@@ -1,12 +1,12 @@
 <?php
 
 use Outboard\Di\Container;
-use Outboard\Di\ExplicitResolver;
+use Outboard\Di\Resolver;
 use Outboard\Di\ValueObjects\Definition;
 
 describe('Container Integration', static function () {
     it('can get() items from a resolver', function () {
-        $resolver = new ExplicitResolver([
+        $resolver = new Resolver([
             'foo' => new Definition(substitute: fn() => 'bar'),
         ]);
 
@@ -16,7 +16,7 @@ describe('Container Integration', static function () {
     });
 
     it('can use has() to check if items exist in any resolver', function () {
-        $resolver = new ExplicitResolver([
+        $resolver = new Resolver([
             'foo' => new Definition(substitute: fn() => 'bar'),
         ]);
 
@@ -27,7 +27,7 @@ describe('Container Integration', static function () {
     });
 
     it('can populate callable params and call it', function () {
-        $resolver = new ExplicitResolver([
+        $resolver = new Resolver([
             stdClass::class => new Definition(
                 substitute: fn() => (object) ['str' => '!'],
             ),
@@ -41,13 +41,13 @@ describe('Container Integration', static function () {
 
     it('resolves from parent container when not found locally', function () {
         // Create a parent container with a definition
-        $parentResolver = new ExplicitResolver([
+        $parentResolver = new Resolver([
             'parent-service' => new Definition(substitute: fn() => 'from parent'),
         ]);
         $parentContainer = new Container([$parentResolver]);
 
         // Create a child container
-        $childResolver = new ExplicitResolver([]);
+        $childResolver = new Resolver([]);
         $childContainer = new Container([$childResolver]);
         $childContainer->setParent($parentContainer);
 
@@ -55,10 +55,10 @@ describe('Container Integration', static function () {
     });
 
     it('resolves through multiple resolvers', function () {
-        $resolver1 = new ExplicitResolver([
+        $resolver1 = new Resolver([
             'service1' => new Definition(substitute: fn() => 'from resolver 1'),
         ]);
-        $resolver2 = new ExplicitResolver([
+        $resolver2 = new Resolver([
             'service2' => new Definition(substitute: fn() => 'from resolver 2'),
         ]);
 
@@ -69,10 +69,10 @@ describe('Container Integration', static function () {
     });
 
     it('uses first resolver that can resolve the id', function () {
-        $resolver1 = new ExplicitResolver([
+        $resolver1 = new Resolver([
             'service' => new Definition(substitute: fn() => 'from resolver 1'),
         ]);
-        $resolver2 = new ExplicitResolver([
+        $resolver2 = new Resolver([
             'service' => new Definition(substitute: fn() => 'from resolver 2'),
         ]);
 
@@ -82,7 +82,7 @@ describe('Container Integration', static function () {
     });
 
     it('caches shared instances across multiple get() calls', function () {
-        $resolver = new ExplicitResolver([
+        $resolver = new Resolver([
             'service' => new Definition(
                 shared: true,
                 substitute: fn() => (object) ['id' => uniqid('', true)],
@@ -98,7 +98,7 @@ describe('Container Integration', static function () {
     });
 
     it('creates new instances for non-shared definitions', function () {
-        $resolver = new ExplicitResolver([
+        $resolver = new Resolver([
             'service' => new Definition(
                 shared: false,
                 substitute: fn() => (object) ['id' => uniqid('', true)],

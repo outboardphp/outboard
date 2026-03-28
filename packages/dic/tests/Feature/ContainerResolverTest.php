@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Outboard\Di\Container;
 use Outboard\Di\ContainerFactory;
-use Outboard\Di\ExplicitResolver;
+use Outboard\Di\Resolver;
 use Outboard\Di\ValueObjects\Definition;
 use Outboard\Di\Enums\Scope;
 
@@ -13,7 +13,7 @@ it('returns the same instance for singleton scope', function () {
         'foo' => new Definition(shared: true, substitute: fn() => (object) []),
     ];
     $container = new Container([
-        new ExplicitResolver($definitions),
+        new Resolver($definitions),
     ]);
     $a = $container->get('foo');
     $b = $container->get('foo');
@@ -25,7 +25,7 @@ it('returns different instances for prototype scope', function () {
         'bar' => new Definition(shared: false, substitute: fn() => (object) ['prop1' => 'val']),
     ];
     $container = new Container([
-        new ExplicitResolver($definitions),
+        new Resolver($definitions),
     ]);
     $a = $container->get('bar');
     $b = $container->get('bar');
@@ -40,7 +40,7 @@ it('passes withParams to the factory', function () {
         ),
     ];
     $container = new Container([
-        new ExplicitResolver($definitions),
+        new Resolver($definitions),
     ]);
     $result = $container->get('baz');
     expect($result)->toBe([1, 2]);
@@ -54,7 +54,7 @@ it('decorates the instance using a call that returns', function () {
         ),
     ];
     $container = new Container([
-        new ExplicitResolver($definitions),
+        new Resolver($definitions),
     ]);
     $result = $container->get('qux');
 
@@ -71,7 +71,7 @@ it('handles property cascade correctly', function () {
         ),
     ];
     $container = new Container([
-        new ExplicitResolver($definitions),
+        new Resolver($definitions),
     ]);
     $result1 = $container->get('combo');
     $result2 = $container->get('combo');
@@ -87,7 +87,7 @@ it('instantiates a real class id', function () {
         ),
     ];
     $container = new Container([
-        new ExplicitResolver($definitions),
+        new Resolver($definitions),
     ]);
     $result = $container->get(TestClass::class);
     expect($result)->toBeInstanceOf(TestClass::class)
@@ -104,7 +104,7 @@ it('instantiates a real class id with a substitute class id', function () {
         ),
     ];
     $container = new Container([
-        new ExplicitResolver($definitions),
+        new Resolver($definitions),
     ]);
     $result = $container->get(TestClass::class);
     expect($result)->toBeInstanceOf(AnotherTestClass::class);
@@ -126,7 +126,7 @@ it('instantiates a real class id with a substitute arbitrary id', function () {
             ];
         }
     };
-    $container = new ContainerFactory($defProv, [ExplicitResolver::class])();
+    $container = new ContainerFactory($defProv, [Resolver::class])();
     $result = $container->get(TestClass::class);
     expect($result)->toBeInstanceOf(AnotherTestClass::class);
 });
@@ -158,7 +158,7 @@ it('honors definition inheritance', function () {
         ),
     ];
     $container = new Container([
-        new ExplicitResolver($definitions),
+        new Resolver($definitions),
     ]);
     $result = $container->get(AnotherTestClass::class);
     expect($result)->toBeInstanceOf(AnotherTestClass::class)
@@ -174,7 +174,7 @@ it('honors definition non-inheritance', function () {
         ),
     ];
     $container = new Container([
-        new ExplicitResolver($definitions),
+        new Resolver($definitions),
     ]);
     expect(fn() => $container->get(AnotherTestClass::class))
         ->toThrow(Outboard\Di\Exception\NotFoundException::class);

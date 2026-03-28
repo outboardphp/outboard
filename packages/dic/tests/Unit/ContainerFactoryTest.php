@@ -1,7 +1,7 @@
 <?php
 
 use Outboard\Di\ContainerFactory;
-use Outboard\Di\ExplicitResolver;
+use Outboard\Di\Resolver;
 use Outboard\Di\AutowiringResolver;
 use Outboard\Di\ValueObjects\Definition;
 use Outboard\Di\Contracts\DefinitionProvider;
@@ -17,7 +17,7 @@ describe('ContainerFactory', function () {
     it('creates a container with custom resolvers', function () {
         $factory = new ContainerFactory(
             null,
-            [ExplicitResolver::class, AutowiringResolver::class]
+            [Resolver::class, AutowiringResolver::class]
         );
         $container = $factory();
 

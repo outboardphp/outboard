@@ -1,11 +1,11 @@
 <?php
 
-use Outboard\Di\ExplicitResolver;
+use Outboard\Di\Resolver;
 use Outboard\Di\ValueObjects\Definition;
 
 describe('ExplicitResolver', static function () {
     it('has() returns false if definition not found', function () {
-        $resolver = new ExplicitResolver([]);
+        $resolver = new Resolver([]);
 
         expect($resolver->has('foo'))->toBeFalse();
     });
@@ -13,7 +13,7 @@ describe('ExplicitResolver', static function () {
     it('has() returns true if definition exists', function () {
         $def = new Definition();
 
-        $resolver = new ExplicitResolver(['foo' => $def]);
+        $resolver = new Resolver(['foo' => $def]);
 
         expect($resolver->has('foo'))->toBeTrue();
     });
@@ -24,7 +24,7 @@ describe('ExplicitResolver', static function () {
             public function get(string $id) { return null; }
         };
 
-        $resolver = new ExplicitResolver([]);
+        $resolver = new Resolver([]);
 
         expect(static fn() => $resolver->resolve('bar', $container))
             ->toThrow(\Outboard\Di\Exception\NotFoundException::class);
@@ -36,7 +36,7 @@ describe('ExplicitResolver', static function () {
             public function get(string $id) { return null; }
         };
 
-        $resolver = new ExplicitResolver([
+        $resolver = new Resolver([
             'service' => new Definition(substitute: fn() => 'result'),
         ]);
 
@@ -52,7 +52,7 @@ describe('ExplicitResolver', static function () {
             public function get(string $id) { return null; }
         };
 
-        $resolver = new ExplicitResolver([
+        $resolver = new Resolver([
             'service' => new Definition(
                 substitute: fn($a, $b) => $a + $b,
                 withParams: [10, 20],

@@ -13,7 +13,7 @@ class ValidationContainer implements ContainerInterface
     protected array $resolutionStack = [];
 
     /**
-     * @param AbstractResolver[] $resolvers
+     * @param Resolver[] $resolvers
      */
     public function __construct(
         protected array $resolvers,
@@ -32,7 +32,7 @@ class ValidationContainer implements ContainerInterface
     {
         // Find a resolver that can resolve this id
         $resolver = \array_find($this->resolvers, fn($resolver) => $resolver->has($id));
-        if (!($resolver instanceof AbstractResolver)) {
+        if (!($resolver instanceof Resolver)) {
             throw new NotFoundException("No resolver was found for '{$id}' during validation.");
         }
 

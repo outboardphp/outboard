@@ -1,20 +1,20 @@
 <?php
 
 use Outboard\Di\Container;
-use Outboard\Di\ExplicitResolver;
+use Outboard\Di\Resolver;
 use Outboard\Di\AutowiringResolver;
 use Outboard\Di\ValueObjects\Definition;
 
 describe('Container::call()', function () {
     it('calls a closure with no parameters', function () {
-        $container = new Container([new ExplicitResolver()]);
+        $container = new Container([new Resolver()]);
         $result = $container->call(fn() => 'hello');
 
         expect($result)->toBe('hello');
     });
 
     it('calls a closure with explicit positional params', function () {
-        $container = new Container([new ExplicitResolver()]);
+        $container = new Container([new Resolver()]);
         $result = $container->call(
             fn($a, $b) => $a + $b,
             [10, 20],
@@ -24,7 +24,7 @@ describe('Container::call()', function () {
     });
 
     it('calls a closure with explicit named params', function () {
-        $container = new Container([new ExplicitResolver()]);
+        $container = new Container([new Resolver()]);
         $result = $container->call(
             fn($a, $b) => $a . $b,
             ['b' => 'world', 'a' => 'hello'],
@@ -39,7 +39,7 @@ describe('Container::call()', function () {
                 substitute: fn() => (object) ['value' => 42],
             ),
         ];
-        $container = new Container([new ExplicitResolver($definitions)]);
+        $container = new Container([new Resolver($definitions)]);
 
         $result = $container->call(fn(stdClass $obj) => $obj->value);
 
@@ -52,7 +52,7 @@ describe('Container::call()', function () {
                 substitute: fn() => (object) ['value' => 100],
             ),
         ];
-        $container = new Container([new ExplicitResolver($definitions)]);
+        $container = new Container([new Resolver($definitions)]);
 
         $result = $container->call(
             fn($multiplier, stdClass $obj) => $obj->value * $multiplier,
@@ -68,7 +68,7 @@ describe('Container::call()', function () {
                 substitute: fn() => (object) ['value' => 'from container'],
             ),
         ];
-        $container = new Container([new ExplicitResolver($definitions)]);
+        $container = new Container([new Resolver($definitions)]);
 
         $override = (object) ['value' => 'explicit'];
         $result = $container->call(
@@ -80,14 +80,14 @@ describe('Container::call()', function () {
     });
 
     it('throws exception when required param cannot be resolved', function () {
-        $container = new Container([new ExplicitResolver()]);
+        $container = new Container([new Resolver()]);
 
         expect(fn() => $container->call(fn($required) => $required))
             ->toThrow(\Outboard\Di\Exception\ContainerException::class, 'must be manually supplied');
     });
 
     it('uses default value for optional params that cannot be resolved', function () {
-        $container = new Container([new ExplicitResolver()]);
+        $container = new Container([new Resolver()]);
 
         $result = $container->call(fn($optional = 'default') => $optional ?? 'was null');
 
@@ -101,7 +101,7 @@ describe('Container::call()', function () {
                 substitute: fn() => new ConcreteClass('resolved'),
             ),
         ];
-        $container = new Container([new ExplicitResolver($definitions)]);
+        $container = new Container([new Resolver($definitions)]);
 
         $result = $container->call(function (NonExistentInterface|ConcreteClass $param) {
             return $param->value;
@@ -111,7 +111,7 @@ describe('Container::call()', function () {
     });
 
     it('throws when no class in union type can be resolved and param is required', function () {
-        $container = new Container([new ExplicitResolver()]);
+        $container = new Container([new Resolver()]);
 
         expect(fn() => $container->call(
             fn(NonExistentInterface|AnotherNonExistent $param) => $param,
@@ -119,7 +119,7 @@ describe('Container::call()', function () {
     });
 
     it('uses null when no class in union type can be resolved and param is optional', function () {
-        $container = new Container([new ExplicitResolver()]);
+        $container = new Container([new Resolver()]);
 
         $result = $container->call(
             fn(NonExistentInterface|AnotherNonExistent|null $param = null) => $param ?? 'was null',
@@ -132,7 +132,7 @@ describe('Container::call()', function () {
         $definitions = [
             CallableClass::class => new Definition(),
         ];
-        $container = new Container([new ExplicitResolver($definitions)]);
+        $container = new Container([new Resolver($definitions)]);
 
         $instance = $container->get(CallableClass::class);
         $result = $container->call([$instance, 'method'], ['value' => 'test']);
@@ -141,7 +141,7 @@ describe('Container::call()', function () {
     });
 
     it('can call invokable object', function () {
-        $container = new Container([new ExplicitResolver()]);
+        $container = new Container([new Resolver()]);
         $invokable = new InvokableClass();
 
         $result = $container->call($invokable, ['message' => 'hello']);
@@ -154,7 +154,7 @@ describe('Container::call()', function () {
             stdClass::class => new Definition(shared: true, substitute: fn() => new stdClass()),
             CallableClass::class => new Definition(),
         ];
-        $resolver = new AutowiringResolver($definitions);
+        $resolver = AutowiringResolver::create($definitions);
         $container = new Container([$resolver]);
 
         $obj1 = $container->get(stdClass::class);

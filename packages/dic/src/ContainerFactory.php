@@ -3,29 +3,31 @@
 namespace Outboard\Di;
 
 use Outboard\Di\Contracts\DefinitionProvider;
+use Outboard\Di\Exception\ContainerException;
+use Outboard\Di\ValueObjects\Definition;
 use Psr\Container\ContainerExceptionInterface;
 
 class ContainerFactory
 {
     /**
-     * @param class-string<AbstractResolver>[] $resolvers
+     * @param class-string<Resolver>[] $resolvers
      */
     public function __construct(
         protected ?DefinitionProvider $definitionProvider = null,
         protected array $resolvers = [
-            ExplicitResolver::class,
-            // AutowiringResolver::class, // disabled until it's working
+            AutowiringResolver::class,
+            Resolver::class,
         ],
     ) {}
 
     /**
-     * @throws ContainerExceptionInterface
+     * @throws ContainerExceptionInterface|\ReflectionException
      */
     public function __invoke(): Container
     {
         $defs = $this->definitionProvider?->getDefinitions() ?? [];
         $resolvers = \array_map(
-            static fn(string $resolverClass) => new $resolverClass($defs),
+            fn(string $resolverClass) => $this->buildResolver($resolverClass, $defs),
             $this->resolvers,
         );
         $this->validateConfig(\array_keys($defs), $resolvers);
@@ -33,7 +35,30 @@ class ContainerFactory
     }
 
     /**
-     * @throws ContainerExceptionInterface
+     * @param class-string $resolverClass
+     * @param array<string, Definition> $definitions
+     * @throws ContainerException
+     */
+    protected function buildResolver(string $resolverClass, array $definitions): Resolver
+    {
+        $candidate = new $resolverClass($definitions);
+
+        if ($candidate instanceof Resolver) {
+            return $candidate;
+        }
+
+        if (\is_callable($candidate)) {
+            $resolver = $candidate();
+            if ($resolver instanceof Resolver) {
+                return $resolver;
+            }
+        }
+
+        throw new ContainerException("Resolver class '{$resolverClass}' must create a Resolver instance.");
+    }
+
+    /**
+     * @throws ContainerExceptionInterface|\ReflectionException
      */
     public function build(): Container
     {
@@ -42,14 +67,14 @@ class ContainerFactory
 
     /**
      * Validates the configuration of the container by ensuring that all
-     * definitions can be resolved without actually
-     * constructing any instances.
-     * This is useful to catch circular dependencies
-     * or missing definitions before the container is used.
+     * definitions can be resolved without actually constructing any instances.
+     * This is useful to catch circular dependencies or missing definitions
+     * before the container is used.
+     *
      * @param string[] $defIds
-     * @param AbstractResolver[] $resolvers
-     * @throws ContainerExceptionInterface
+     * @param Resolver[] $resolvers
      * @return void
+     * @throws ContainerExceptionInterface|\ReflectionException
      */
     protected function validateConfig($defIds, $resolvers)
     {

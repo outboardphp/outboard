@@ -24,7 +24,7 @@ class Container implements ComposableContainer
     protected ?ContainerInterface $parent;
 
     /**
-     * @param AbstractResolver[] $resolvers
+     * @param Resolver[] $resolvers
      * @param CacheInterface|null $cache Optional cache instance (creates default if not provided)
      */
     public function __construct(
