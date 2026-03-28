@@ -4,13 +4,11 @@ namespace Outboard\Di;
 
 use Outboard\Di\Contracts\DefinitionProvider;
 use Outboard\Di\Exception\ContainerException;
+use Outboard\Di\Support\DefinitionIdNormalizer;
 use Outboard\Di\ValueObjects\Definition;
 
 class CombinedDefinitionProvider implements DefinitionProvider
 {
-    use Traits\NormalizesId; // in combine()
-    use Traits\TestsRegexSilently; // in combine()
-
     /** @var array<string, Definition> */
     protected array $definitions;
 
@@ -19,7 +17,9 @@ class CombinedDefinitionProvider implements DefinitionProvider
      */
     public function __construct(
         protected array $providers,
-    ) {}
+        protected DefinitionIdNormalizer $definitionIdNormalizer = new DefinitionIdNormalizer(),
+    ) {
+    }
 
     /**
      * @throws ContainerException
@@ -48,9 +48,7 @@ class CombinedDefinitionProvider implements DefinitionProvider
         $result = [];
         foreach ($definitionSets as $set) {
             foreach ($set as $id => $definition) {
-                if (static::testRegexSilently($id) === false) {
-                    $id = static::normalizeId($id);
-                }
+                $id = $this->definitionIdNormalizer->normalizeDefinitionId($id);
                 if (isset($result[$id])) {
                     throw new ContainerException("Definition collision: {$id} is already defined");
                 }

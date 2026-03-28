@@ -2,7 +2,9 @@
 
 namespace Outboard\Di;
 
+use Outboard\Di\Matching\DefinitionMatcher;
 use Outboard\Di\Exception\NotFoundException;
+use Outboard\Di\Support\DefinitionIdNormalizer;
 use Outboard\Di\ValueObjects\Definition;
 use Outboard\Di\ValueObjects\ResolvedFactory;
 use Psr\Container\ContainerExceptionInterface;
@@ -10,9 +12,6 @@ use Psr\Container\ContainerInterface;
 
 abstract class AbstractResolver
 {
-    use \Outboard\Di\Traits\NormalizesId;
-    use \Outboard\Di\Traits\TestsRegexSilently;
-
     /** @var array<string, ?ResolvedFactory> */
     protected array $definitionLookupCache = [];
 
@@ -41,15 +40,13 @@ abstract class AbstractResolver
      */
     public function __construct(
         protected array $definitions = [],
+        protected DefinitionIdNormalizer $definitionIdNormalizer = new DefinitionIdNormalizer(),
+        protected DefinitionMatcher $definitionMatcher = new DefinitionMatcher(),
     ) {
         // Normalize the definitions to ensure they are in a consistent format
         $normalized = [];
         foreach ($this->definitions as $id => $definition) {
-            // Don't normalize regex patterns or the catch-all
-            if ($id !== '*' && static::testRegexSilently($id) === false) {
-                $id = static::normalizeId($id);
-            }
-            $normalized[$id] = $definition;
+            $normalized[$this->definitionIdNormalizer->normalizeDefinitionId($id)] = $definition;
         }
         $this->definitions = $normalized;
     }
@@ -82,50 +79,7 @@ abstract class AbstractResolver
      */
     protected function find($id)
     {
-        // First, check for an exact match
-        $normalName = static::normalizeId($id);
-        if (isset($this->definitions[$normalName])) {
-            return new ResolvedFactory(
-                definitionId: $normalName,
-                definition: $this->definitions[$normalName],
-            );
-        }
-
-        // Next, look for a non-exact match
-        foreach ($this->definitions as $defId => $definition) {
-            if ($defId === '*') {
-                // Skip the catch-all definition for now, if it exists
-                continue;
-            }
-            if (
-                // The current definition can apply to subclasses, and its id is a parent of our target class
-                ($definition->strict === false && \is_subclass_of($id, $defId))
-                // or the id is a regex that matches our target id
-                || static::testRegexSilently($defId, $id) === 1
-            ) {
-                return new ResolvedFactory(
-                    definitionId: $defId,
-                    definition: $definition,
-                );
-            }
-        }
-        // If we get here, return the catch-all definition if it exists
-        if (
-            isset($this->definitions['*'])
-            && (
-                \class_exists($id)
-                || \interface_exists($id)
-                || isset($this->definitions['*']->substitute)
-            )
-        ) {
-            return new ResolvedFactory(
-                definitionId: '*',
-                definition: $this->definitions['*'],
-            );
-        }
-        // No need to load up the cache with empty objects,
-        // so let resolve() handle it.
-        return null;
+        return $this->definitionMatcher->match($id, $this->definitions);
     }
 
     /**
@@ -160,54 +114,90 @@ abstract class AbstractResolver
      */
     protected function makeClosure($id, $definition, $container)
     {
+        $closure = null;
+
         // Intent to substitute with the result of a callable short-circuits the remaining logic
         // Callable supports params and post-call
         if (\is_callable($definition->substitute)) {
-            $withParams = $this->callableAddParams(($definition->substitute)(...), $definition, $container);
-            return $this->addPostCall($withParams, $definition, $container);
+            $closure = $this->callableAddParams(($definition->substitute)(...), $definition, $container);
+        } elseif (\is_object($definition->substitute)) {
+            // Intent to substitute an existing object short-circuits the remaining logic
+            // Object supports post-call only
+            $closure = static function () use ($definition) { return $definition->substitute; };
+        } else {
+            $targetId = $id;
+
+            // Now, if the substitute is a string, we expect it to be a class name or an id of another definition.
+            if (\is_string($definition->substitute)) {
+                [$closure, $targetId] = $this->resolveStringSubstitute(
+                    $id,
+                    $definition->substitute,
+                    $container,
+                );
+            }
+
+            // At this point, expect the $targetId to be a class name.
+            /** @var class-string $targetId */
+
+            if ($closure === null) {
+                $closure = $this->buildInstantiationClosure($targetId, $definition, $container);
+            }
         }
 
-        // Intent to substitute an existing object short-circuits the remaining logic
-        // Object supports post-call only
-        if (\is_object($definition->substitute)) {
-            return $this->addPostCall(
-                static function () use ($definition) { return $definition->substitute; },
-                $definition,
-                $container,
+        return $this->addPostCall($closure, $definition, $container);
+    }
+
+    /**
+     * Resolve a string substitute to either a container-backed closure or a class-string target id.
+     *
+     * @param string $definitionId
+     * @param string $substitute
+     * @param ContainerInterface $container
+     * @throws NotFoundException
+     * @return array{0: ?\Closure, 1: string}
+     */
+    protected function resolveStringSubstitute($definitionId, $substitute, $container)
+    {
+        if ($container->has($substitute)) {
+            return [
+                static function () use ($substitute, $container) {
+                    // Get the instance from the container
+                    return $container->get($substitute);
+                },
+                $definitionId,
+            ];
+        }
+
+        if (!\class_exists($substitute)) {
+            throw new NotFoundException(
+                "Substitute '{$substitute}' not found for definition '{$definitionId}'",
             );
         }
 
-        // Now, if the substitute is a string, we expect it to be a class name or an id of another definition.
-        if (\is_string($definition->substitute)) {
-            if ($container->has($definition->substitute)) {
-                $closure = static function () use ($definition, $container) {
-                    // Get the instance from the container
-                    return $container->get($definition->substitute);
-                };
-                return $this->addPostCall($closure, $definition, $container);
-            }
-            if (!\class_exists($definition->substitute)) {
-                throw new NotFoundException(
-                    "Substitute '{$definition->substitute}' not found for definition '{$id}'",
-                );
-            }
-            $id = $definition->substitute;
-        }
+        return [null, $substitute];
+    }
 
-        // At this point, expect the $id to be a class name.
-        /** @var class-string $id */
-
+    /**
+     * Build the base instantiation closure for a resolved class-string target.
+     *
+     * @param class-string $targetId
+     * @param Definition $definition
+     * @param ContainerInterface $container
+     * @throws ContainerExceptionInterface
+     * @throws \ReflectionException
+     * @return callable
+     */
+    protected function buildInstantiationClosure($targetId, $definition, $container)
+    {
         // If the intent is to instantiate the container itself, and the container is shared,
         // assume we want the existing one rather than a new container just for the object graph,
         // therefore only post-call is supported
-        if ($definition->shared && $id === $container::class) {
-            $closure = static function () use ($container) { return $container; };
-            return $this->addPostCall($closure, $definition, $container);
+        if ($definition->shared && $targetId === $container::class) {
+            return static function () use ($container) { return $container; };
         }
 
-        $closure = static fn(...$params) => new $id(...$params);
-        $withParams = $this->constructorAddParams($closure, $id, $definition, $container);
-        return $this->addPostCall($withParams, $definition, $container);
+        $factory = static fn(...$params) => new $targetId(...$params);
+        return $this->constructorAddParams($factory, $targetId, $definition, $container);
     }
 
     /**

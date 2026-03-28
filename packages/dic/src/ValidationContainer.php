@@ -4,12 +4,11 @@ namespace Outboard\Di;
 
 use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Exception\NotFoundException;
+use Outboard\Di\Support\DefinitionIdNormalizer;
 use Psr\Container\ContainerInterface;
 
 class ValidationContainer implements ContainerInterface
 {
-    use Traits\NormalizesId;
-
     /** @var string[][] */
     protected array $resolutionStack = [];
 
@@ -18,13 +17,15 @@ class ValidationContainer implements ContainerInterface
      */
     public function __construct(
         protected array $resolvers,
-    ) {}
+        protected DefinitionIdNormalizer $definitionIdNormalizer = new DefinitionIdNormalizer(),
+    ) {
+    }
 
     /**
      * @inheritDoc
      * @template T
      * @param class-string<T>|string $id Identifier of the entry to look for.
-     * @throws ContainerException
+     * @throws ContainerException|\ReflectionException
      * @phpstan-ignore method.templateTypeNotInParameter
      */
     public function get(string $id)
@@ -35,7 +36,7 @@ class ValidationContainer implements ContainerInterface
             throw new NotFoundException("No resolver was found for '{$id}' during validation.");
         }
 
-        $thisId = [$resolver::class, static::normalizeId($id)];
+        $thisId = [$resolver::class, $this->definitionIdNormalizer->normalizeLookupId($id)];
         if (\in_array($thisId, $this->resolutionStack, true)) {
             throw new ContainerException('Circular dependency detected: '
                 . \implode(' -> ', \array_merge(
