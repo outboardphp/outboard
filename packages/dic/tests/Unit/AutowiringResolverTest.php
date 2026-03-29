@@ -70,6 +70,21 @@ describe('AutowiringResolver', function () {
             ->and($result->dependency)->toBeInstanceOf(stdClass::class);
     });
 
+    it('applies numeric withParams to unresolved builtin params when class-typed params come first', function () {
+        $definitions = [
+            ClassFirstMixedParamsClass::class => new Definition(
+                withParams: ['queued value'],
+            ),
+        ];
+        $resolver = AutowiringResolver::create($definitions);
+        $container = new Container([$resolver]);
+
+        $result = $container->get(ClassFirstMixedParamsClass::class);
+
+        expect($result->dependency)->toBeInstanceOf(stdClass::class)
+            ->and($result->name)->toBe('queued value');
+    });
+
     it('autowires callables with type hints', function () {
         $definitions = [
             'callable' => new Definition(
@@ -105,7 +120,7 @@ describe('AutowiringResolver', function () {
         $container = new Container([$resolver]);
 
         expect(fn() => $container->get(BuiltinTypeClass::class))
-            ->toThrow(\Outboard\Di\Exception\ContainerException::class, 'without class type hint');
+            ->toThrow(\Outboard\Di\Exception\ContainerException::class, 'type must be specified or value must be supplied');
     });
 
     it('uses default value for builtin types', function () {
@@ -181,6 +196,14 @@ class MixedParamsClass
     public function __construct(
         public string $name,
         public stdClass $dependency,
+    ) {}
+}
+
+class ClassFirstMixedParamsClass
+{
+    public function __construct(
+        public stdClass $dependency,
+        public string $name,
     ) {}
 }
 

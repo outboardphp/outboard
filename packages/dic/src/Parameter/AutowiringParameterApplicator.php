@@ -46,6 +46,21 @@ readonly class AutowiringParameterApplicator implements ParameterApplicatorInter
     protected function resolveParams($ref, $callable, Definition $definition, ContainerInterface $container)
     {
         $params = $ref->getParameters();
+        $namedParams = [];
+        $numericParams = [];
+
+        foreach ($definition->withParams as $key => $value) {
+            if (\is_string($key) && !\is_numeric($key)) {
+                $namedParams[$key] = $value;
+                continue;
+            }
+
+            $numericParams[] = $value;
+        }
+
+        $namedParams = $this->referenceResolver->resolve($namedParams, $container);
+        $numericParams = $this->referenceResolver->resolve($numericParams, $container);
+
         $withParams = [];
 
         foreach ($params as $param) {
@@ -54,29 +69,44 @@ readonly class AutowiringParameterApplicator implements ParameterApplicatorInter
             $type = $param->getType();
             $hasDefault = $param->isDefaultValueAvailable();
 
-            if (isset($definition->withParams[$name])) {
-                $withParams[$name] = $definition->withParams[$name];
-                continue;
-            }
-
-            if (!isset($withParams[$name]) && isset($definition->withParams[$pos])) {
-                $withParams[$pos] = $definition->withParams[$pos];
+            if (isset($namedParams[$name])) {
+                // Param was specified by name, so use it.
+                $withParams[$name] = $namedParams[$name];
                 continue;
             }
 
             if ($type !== null && !($type instanceof \ReflectionNamedType)) {
-                throw new ContainerException("Cannot autowire parameter $pos \"$name\" with union or intersect type");
+                // Param has a type, but it's not a simple named type (scalar or class), so assume union or intersect.
+                // Consume a numbered param if available, otherwise throw an error.
+                if (\count($numericParams)) {
+                    $withParams[$name] = array_shift($numericParams);
+                    continue;
+                }
+
+                throw new ContainerException("Cannot autowire parameter $pos \"$name\" with union or intersect type; value must be provided");
             }
 
-            if ($type === null || $type->isBuiltin()) {
-                if (!$hasDefault) {
-                    throw new ContainerException("Cannot autowire parameter $pos \"$name\" without class type hint");
-                }
-                $withParams[$name] = $param->getDefaultValue();
+            if ($type !== null && !$type->isBuiltin()) {
+                // Param has a type and it's a class name, so pass it through to be resolved later.
+                $withParams[$name] = $type->getName();
                 continue;
             }
 
-            $withParams[$name] = $type->getName();
+            if (\count($numericParams)) {
+                // Param has no type hint or it's a builtin type, so consume a numbered param.
+                $withParams[$name] = array_shift($numericParams);
+                continue;
+            }
+
+            if (!$hasDefault) {
+                throw new ContainerException("Cannot resolve parameter $pos \"$name\"; type must be specified or value must be supplied");
+            }
+
+            $withParams[$name] = $param->getDefaultValue();
+        }
+
+        if ($remaining = \count($numericParams)) { // intentional assignment
+            throw new ContainerException("Too many numeric values supplied to `withParams`; $remaining value(s) were not consumed");
         }
 
         $resolved = $this->referenceResolver->resolve($withParams, $container);
