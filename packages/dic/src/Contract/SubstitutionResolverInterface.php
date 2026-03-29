@@ -1,9 +1,9 @@
 <?php
 
-namespace Outboard\Di\Contracts;
+namespace Outboard\Di\Contract;
 
-use Outboard\Di\ValueObjects\Definition;
-use Outboard\Di\ValueObjects\SubstitutionResolution;
+use Outboard\Di\ValueObject\Definition;
+use Outboard\Di\ValueObject\SubstitutionResolution;
 use Psr\Container\ContainerInterface;
 
 interface SubstitutionResolverInterface

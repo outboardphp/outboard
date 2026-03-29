@@ -2,7 +2,7 @@
 
 use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Parameter\AutowiringParameterApplicator;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('AutowiringParameterApplicator', static function () {
     it('autowires callable type hints', function () {

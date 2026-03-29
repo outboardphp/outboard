@@ -2,11 +2,11 @@
 
 namespace Outboard\Di;
 
-use Outboard\Di\Contracts\CacheInterface;
-use Outboard\Di\Contracts\ComposableContainer;
+use Outboard\Di\Contract\CacheInterface;
+use Outboard\Di\Contract\ComposableContainer;
 use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Exception\NotFoundException;
-use Outboard\Di\ValueObjects\ResolvedFactory;
+use Outboard\Di\ValueObject\ResolvedFactory;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Technically\CallableReflection\CallableReflection;

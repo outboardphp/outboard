@@ -2,7 +2,7 @@
 
 use Outboard\Di\CombinedDefinitionProvider;
 use Outboard\Di\Tests\Fixtures\ArrayDefinitionProvider;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('CombinedDefinitionProvider', static function () {
     it('combines definitions from multiple providers', function () {

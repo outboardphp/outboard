@@ -2,7 +2,7 @@
 
 namespace Outboard\Di\Support;
 
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 use Psr\Container\ContainerInterface;
 
 class PostCallDecorator

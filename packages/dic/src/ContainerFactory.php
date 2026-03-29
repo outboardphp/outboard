@@ -2,9 +2,9 @@
 
 namespace Outboard\Di;
 
-use Outboard\Di\Contracts\DefinitionProvider;
+use Outboard\Di\Contract\DefinitionProvider;
 use Outboard\Di\Exception\ContainerException;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 use Psr\Container\ContainerExceptionInterface;
 
 class ContainerFactory

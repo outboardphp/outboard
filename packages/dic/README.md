@@ -58,8 +58,8 @@ a variety of strategies of loading definitions.
 declare(strict_types=1);
 
 use Outboard\Di\ContainerFactory;
-use Outboard\Di\Contracts\DefinitionProvider;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\Contract\DefinitionProvider;
+use Outboard\Di\ValueObject\Definition;
 
 $provider = new class implements DefinitionProvider {
     public function getDefinitions(): array
@@ -217,7 +217,7 @@ If you want implicit class resolution, use the AutowiringResolver factory.
 ```php
 use Outboard\Di\AutowiringResolver;
 use Outboard\Di\Container;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 $definitions = [
     App\Service\UserService::class => new Definition(
@@ -236,7 +236,7 @@ explicit definitions, you can combine resolvers. Each one will be queried sequen
 use Outboard\Di\AutowiringResolver;
 use Outboard\Di\Container;
 use Outboard\Di\Resolver;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 $container = new Container([
     new Resolver($definitions),

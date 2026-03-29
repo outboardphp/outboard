@@ -1,7 +1,7 @@
 <?php
 
 use Outboard\Di\Support\PostCallDecorator;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('PostCallDecorator', static function () {
     it('returns object unchanged when no post-call is configured', function () {

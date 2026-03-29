@@ -1,8 +1,8 @@
 <?php
 
-namespace Outboard\Di\ValueObjects;
+namespace Outboard\Di\ValueObject;
 
-use Outboard\Di\Enums\SubstitutionMode;
+use Outboard\Di\Enum\SubstitutionMode;
 
 readonly class SubstitutionResolution
 {

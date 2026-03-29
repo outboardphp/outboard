@@ -2,8 +2,8 @@
 
 namespace Outboard\Di;
 
-use Outboard\Di\Enums\Scope;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\Enum\Scope;
+use Outboard\Di\ValueObject\Definition;
 
 class DefinitionBuilder
 {

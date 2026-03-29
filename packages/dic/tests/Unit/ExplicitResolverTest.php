@@ -2,7 +2,7 @@
 
 use Outboard\Di\Container;
 use Outboard\Di\Resolver;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('ExplicitResolver', static function () {
     it('has() returns false if definition not found', function () {

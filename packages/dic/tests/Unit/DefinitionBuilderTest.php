@@ -8,7 +8,7 @@ describe('DefinitionBuilder', static function () {
 
         $def = $builder->build();
 
-        expect($def)->toBeInstanceOf(\Outboard\Di\ValueObjects\Definition::class)
+        expect($def)->toBeInstanceOf(\Outboard\Di\ValueObject\Definition::class)
             ->and($def->shared)->toBeFalse()
             ->and($def->strict)->toBeFalse()
             ->and($def->substitute)->toBeNull()

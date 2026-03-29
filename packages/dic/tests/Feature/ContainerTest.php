@@ -2,7 +2,7 @@
 
 use Outboard\Di\Container;
 use Outboard\Di\Resolver;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('Container Integration', static function () {
     it('can get() items from a resolver', function () {

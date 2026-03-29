@@ -2,11 +2,11 @@
 
 namespace Outboard\Di\Substitution;
 
-use Outboard\Di\Contracts\SubstitutionHandlerInterface;
-use Outboard\Di\Contracts\SubstitutionResolverInterface;
+use Outboard\Di\Contract\SubstitutionHandlerInterface;
+use Outboard\Di\Contract\SubstitutionResolverInterface;
 use Outboard\Di\Exception\ContainerException;
-use Outboard\Di\ValueObjects\Definition;
-use Outboard\Di\ValueObjects\SubstitutionResolution;
+use Outboard\Di\ValueObject\Definition;
+use Outboard\Di\ValueObject\SubstitutionResolution;
 use Psr\Container\ContainerInterface;
 
 class SubstitutionResolverChain implements SubstitutionResolverInterface

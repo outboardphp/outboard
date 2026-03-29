@@ -1,8 +1,8 @@
 <?php
 
-namespace Outboard\Di\ValueObjects;
+namespace Outboard\Di\ValueObject;
 
-use Outboard\Di\Enums\Scope;
+use Outboard\Di\Enum\Scope;
 
 readonly class Definition
 {

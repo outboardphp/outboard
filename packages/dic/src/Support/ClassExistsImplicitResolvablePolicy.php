@@ -2,7 +2,7 @@
 
 namespace Outboard\Di\Support;
 
-use Outboard\Di\Contracts\ImplicitResolvablePolicyInterface;
+use Outboard\Di\Contract\ImplicitResolvablePolicyInterface;
 
 class ClassExistsImplicitResolvablePolicy implements ImplicitResolvablePolicyInterface
 {

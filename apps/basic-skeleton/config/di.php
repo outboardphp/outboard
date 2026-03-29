@@ -1,6 +1,6 @@
 <?php
 
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 return [
     \Outboard\Framework\Application::class => new Definition(),

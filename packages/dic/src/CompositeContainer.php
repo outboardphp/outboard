@@ -2,7 +2,7 @@
 
 namespace Outboard\Di;
 
-use Outboard\Di\Contracts\ComposableContainer;
+use Outboard\Di\Contract\ComposableContainer;
 use Outboard\Di\Exception\NotFoundException;
 use Psr\Container\ContainerInterface;
 

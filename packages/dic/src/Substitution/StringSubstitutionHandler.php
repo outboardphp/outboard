@@ -2,11 +2,11 @@
 
 namespace Outboard\Di\Substitution;
 
-use Outboard\Di\Contracts\SubstitutionHandlerInterface;
-use Outboard\Di\Enums\SubstitutionMode;
+use Outboard\Di\Contract\SubstitutionHandlerInterface;
+use Outboard\Di\Enum\SubstitutionMode;
 use Outboard\Di\Exception\NotFoundException;
-use Outboard\Di\ValueObjects\Definition;
-use Outboard\Di\ValueObjects\SubstitutionResolution;
+use Outboard\Di\ValueObject\Definition;
+use Outboard\Di\ValueObject\SubstitutionResolution;
 use Psr\Container\ContainerInterface;
 
 class StringSubstitutionHandler implements SubstitutionHandlerInterface

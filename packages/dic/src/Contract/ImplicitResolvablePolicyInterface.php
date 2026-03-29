@@ -1,6 +1,6 @@
 <?php
 
-namespace Outboard\Di\Contracts;
+namespace Outboard\Di\Contract;
 
 interface ImplicitResolvablePolicyInterface
 {

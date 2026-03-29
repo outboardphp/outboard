@@ -2,7 +2,7 @@
 
 namespace Outboard\Di\Matching;
 
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 class SubclassMatchStrategy
 {

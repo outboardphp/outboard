@@ -2,10 +2,10 @@
 
 namespace Outboard\Di;
 
-use Outboard\Di\Contracts\ImplicitResolvablePolicyInterface;
-use Outboard\Di\Contracts\ParameterApplicatorInterface;
-use Outboard\Di\Contracts\SubstitutionResolverInterface;
-use Outboard\Di\Enums\SubstitutionMode;
+use Outboard\Di\Contract\ImplicitResolvablePolicyInterface;
+use Outboard\Di\Contract\ParameterApplicatorInterface;
+use Outboard\Di\Contract\SubstitutionResolverInterface;
+use Outboard\Di\Enum\SubstitutionMode;
 use Outboard\Di\Matching\DefinitionMatcher;
 use Outboard\Di\Exception\NotFoundException;
 use Outboard\Di\Parameter\ExplicitParameterApplicator;
@@ -13,9 +13,9 @@ use Outboard\Di\Support\DefinitionIdNormalizer;
 use Outboard\Di\Support\NeverImplicitlyResolvablePolicy;
 use Outboard\Di\Support\PostCallDecorator;
 use Outboard\Di\Substitution\SubstitutionResolverChain;
-use Outboard\Di\ValueObjects\Definition;
-use Outboard\Di\ValueObjects\ResolvedFactory;
-use Outboard\Di\ValueObjects\SubstitutionResolution;
+use Outboard\Di\ValueObject\Definition;
+use Outboard\Di\ValueObject\ResolvedFactory;
+use Outboard\Di\ValueObject\SubstitutionResolution;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 

@@ -7,7 +7,7 @@ use Outboard\Di\Support\DefinitionIdNormalizer;
 use Outboard\Di\Support\RegexPatternMatcher;
 use Outboard\Di\Tests\Fixtures\DefinitionMatcherBaseService;
 use Outboard\Di\Tests\Fixtures\DefinitionMatcherChildService;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('DefinitionMatcher', static function () {
     it('matches exact ids case-insensitively', function () {

@@ -2,8 +2,8 @@
 
 use Outboard\Di\Container;
 use Outboard\Di\Resolver;
-use Outboard\Di\ValueObjects\Definition;
-use Outboard\Di\ValueObjects\ResolvedFactory;
+use Outboard\Di\ValueObject\Definition;
+use Outboard\Di\ValueObject\ResolvedFactory;
 use Psr\Container\ContainerInterface;
 
 describe('Container', static function () {

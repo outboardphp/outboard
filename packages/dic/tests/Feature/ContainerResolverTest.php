@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Outboard\Di\Container;
 use Outboard\Di\ContainerFactory;
 use Outboard\Di\Resolver;
-use Outboard\Di\ValueObjects\Definition;
-use Outboard\Di\Enums\Scope;
+use Outboard\Di\ValueObject\Definition;
+use Outboard\Di\Enum\Scope;
 
 it('returns the same instance for singleton scope', function () {
     $definitions = [
@@ -130,7 +130,7 @@ it('instantiates a real class id with a substitute class id', function () {
 });
 
 it('instantiates a real class id with a substitute arbitrary id', function () {
-    $defProv = new class implements \Outboard\Di\Contracts\DefinitionProvider {
+    $defProv = new class implements \Outboard\Di\Contract\DefinitionProvider {
         public function getDefinitions(): array
         {
             return [
@@ -151,7 +151,7 @@ it('instantiates a real class id with a substitute arbitrary id', function () {
 });
 
 it('detects circular dependencies', function () {
-    $defProv = new class implements \Outboard\Di\Contracts\DefinitionProvider {
+    $defProv = new class implements \Outboard\Di\Contract\DefinitionProvider {
         public function getDefinitions(): array
         {
             return [

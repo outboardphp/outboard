@@ -2,10 +2,10 @@
 
 namespace Outboard\Di\Parameter;
 
-use Outboard\Di\Contracts\ParameterApplicatorInterface;
+use Outboard\Di\Contract\ParameterApplicatorInterface;
 use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Support\ContainerReferenceResolver;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 

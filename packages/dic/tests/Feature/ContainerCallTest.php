@@ -3,7 +3,7 @@
 use Outboard\Di\Container;
 use Outboard\Di\Resolver;
 use Outboard\Di\AutowiringResolver;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('Container::call()', function () {
     it('calls a closure with no parameters', function () {

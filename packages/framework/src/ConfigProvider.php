@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Outboard\Framework;
 
-class ConfigProvider implements \Outboard\Di\Contracts\DefinitionProvider
+class ConfigProvider implements \Outboard\Di\Contract\DefinitionProvider
 {
     public function getDefinitions(): array
     {

@@ -2,7 +2,7 @@
 
 use Outboard\Di\AutowiringResolver;
 use Outboard\Di\Container;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('AutowiringResolver', function () {
     it('has() returns true for existing classes', function () {

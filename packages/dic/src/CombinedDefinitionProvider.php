@@ -2,10 +2,10 @@
 
 namespace Outboard\Di;
 
-use Outboard\Di\Contracts\DefinitionProvider;
+use Outboard\Di\Contract\DefinitionProvider;
 use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Support\DefinitionIdNormalizer;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 class CombinedDefinitionProvider implements DefinitionProvider
 {

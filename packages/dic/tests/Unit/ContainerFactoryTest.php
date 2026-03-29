@@ -3,8 +3,8 @@
 use Outboard\Di\ContainerFactory;
 use Outboard\Di\Resolver;
 use Outboard\Di\AutowiringResolver;
-use Outboard\Di\ValueObjects\Definition;
-use Outboard\Di\Contracts\DefinitionProvider;
+use Outboard\Di\ValueObject\Definition;
+use Outboard\Di\Contract\DefinitionProvider;
 
 describe('ContainerFactory', function () {
     it('creates a container with default resolvers', function () {

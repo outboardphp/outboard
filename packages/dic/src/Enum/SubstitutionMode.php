@@ -1,6 +1,6 @@
 <?php
 
-namespace Outboard\Di\Enums;
+namespace Outboard\Di\Enum;
 
 enum SubstitutionMode
 {

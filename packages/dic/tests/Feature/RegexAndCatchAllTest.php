@@ -2,7 +2,7 @@
 
 use Outboard\Di\Container;
 use Outboard\Di\Resolver;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('Resolver with regex and catch-all patterns', function () {
     it('matches ids with regex pattern', function () {

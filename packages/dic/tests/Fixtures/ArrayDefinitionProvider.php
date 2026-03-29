@@ -2,8 +2,8 @@
 
 namespace Outboard\Di\Tests\Fixtures;
 
-use Outboard\Di\Contracts\DefinitionProvider;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\Contract\DefinitionProvider;
+use Outboard\Di\ValueObject\Definition;
 
 class ArrayDefinitionProvider implements DefinitionProvider
 {

@@ -2,8 +2,8 @@
 
 namespace Outboard\Di\Matching;
 
-use Outboard\Di\ValueObjects\Definition;
-use Outboard\Di\ValueObjects\ResolvedFactory;
+use Outboard\Di\ValueObject\Definition;
+use Outboard\Di\ValueObject\ResolvedFactory;
 
 class CatchAllMatchStrategy
 {

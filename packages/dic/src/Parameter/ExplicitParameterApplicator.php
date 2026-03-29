@@ -3,9 +3,9 @@
 namespace Outboard\Di\Parameter;
 
 use Outboard\Di\Container;
-use Outboard\Di\Contracts\ParameterApplicatorInterface;
+use Outboard\Di\Contract\ParameterApplicatorInterface;
 use Outboard\Di\Support\ContainerReferenceResolver;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 use Psr\Container\ContainerInterface;
 
 readonly class ExplicitParameterApplicator implements ParameterApplicatorInterface

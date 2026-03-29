@@ -1,8 +1,8 @@
 <?php
 
-use Outboard\Di\Enums\SubstitutionMode;
+use Outboard\Di\Enum\SubstitutionMode;
 use Outboard\Di\Substitution\SubstitutionResolverChain;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('SubstitutionResolverChain', static function () {
     it('resolves callable substitutes', function () {

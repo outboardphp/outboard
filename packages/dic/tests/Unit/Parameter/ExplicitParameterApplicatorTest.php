@@ -3,7 +3,7 @@
 use Outboard\Di\Container;
 use Outboard\Di\Resolver;
 use Outboard\Di\Parameter\ExplicitParameterApplicator;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 describe('ExplicitParameterApplicator', static function () {
     it('passes explicit params to callable factories', function () {

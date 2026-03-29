@@ -2,16 +2,16 @@
 
 namespace Outboard\Di;
 
-use Outboard\Di\Contracts\ImplicitResolvablePolicyInterface;
-use Outboard\Di\Contracts\ParameterApplicatorInterface;
-use Outboard\Di\Contracts\SubstitutionResolverInterface;
+use Outboard\Di\Contract\ImplicitResolvablePolicyInterface;
+use Outboard\Di\Contract\ParameterApplicatorInterface;
+use Outboard\Di\Contract\SubstitutionResolverInterface;
 use Outboard\Di\Matching\DefinitionMatcher;
 use Outboard\Di\Parameter\AutowiringParameterApplicator;
 use Outboard\Di\Support\ClassExistsImplicitResolvablePolicy;
 use Outboard\Di\Support\DefinitionIdNormalizer;
 use Outboard\Di\Support\PostCallDecorator;
 use Outboard\Di\Substitution\SubstitutionResolverChain;
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 class AutowiringResolver
 {

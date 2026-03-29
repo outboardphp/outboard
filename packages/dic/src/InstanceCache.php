@@ -2,7 +2,7 @@
 
 namespace Outboard\Di;
 
-use Outboard\Di\Contracts\CacheInterface;
+use Outboard\Di\Contract\CacheInterface;
 use Outboard\Di\Exception\NotFoundException;
 
 /**

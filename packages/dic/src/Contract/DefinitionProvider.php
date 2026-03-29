@@ -1,8 +1,8 @@
 <?php
 
-namespace Outboard\Di\Contracts;
+namespace Outboard\Di\Contract;
 
-use Outboard\Di\ValueObjects\Definition;
+use Outboard\Di\ValueObject\Definition;
 
 interface DefinitionProvider
 {
