@@ -41,11 +41,15 @@ class DefinitionBuilder
 
     /**
      * Share instances using this rule within the container or set a specific scope.
-     * Accepts true/false, 'request', or 'session'.
+     * Accepts true/false, Scope::Request, or Scope::Session.
      */
     public function shared(bool|Scope $shared = true): static
     {
-        $this->shared = $shared;
+        $this->shared = match ($shared) {
+            Scope::Singleton => true,
+            Scope::Prototype => false,
+            default => $shared,
+        };
         return $this;
     }
 
