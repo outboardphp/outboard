@@ -6,6 +6,8 @@ use Outboard\Di\Contracts\CacheInterface;
 use Outboard\Di\Contracts\ComposableContainer;
 use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Exception\NotFoundException;
+use Outboard\Di\ValueObjects\ResolvedFactory;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Technically\CallableReflection\CallableReflection;
 use Technically\CallableReflection\Parameters\ParameterReflection;
@@ -39,6 +41,7 @@ class Container implements ComposableContainer
      * @template T of object
      * @param class-string<T>|string $id Identifier of the entry to look for.
      * @return ($id is class-string<T> ? T : mixed)
+     * @throws \ReflectionException
      */
     public function get(string $id)
     {
@@ -52,7 +55,29 @@ class Container implements ComposableContainer
         }
 
         // First-time resolution
-        return $this->resolve($id);
+        $resolution = $this->resolve($id);
+        $instance = ($resolution->factory)();
+        $this->cacheResolution($id, $resolution, $instance);
+        return $instance;
+    }
+
+    /**
+     * Always gets a fresh instance of a service, but uses the cached factory if possible.
+     *
+     * @param string $id
+     * @return mixed
+     * @throws ContainerExceptionInterface
+     * @throws \ReflectionException
+     */
+    public function make(string $id)
+    {
+        if ($this->cache->hasFactory($id)) {
+            return $this->cache->getFactory($id)();
+        }
+
+        // First-time resolution, but don't cache anything
+        $resolution = $this->resolve($id);
+        return ($resolution->factory)();
     }
 
     public function has(string $id): bool
@@ -62,7 +87,8 @@ class Container implements ComposableContainer
 
     /**
      * @param array<int|string, mixed> $args Supports named or positional parameters by array key
-     * @throws ContainerException if a parameter's value cannot be determined
+     * @throws ContainerExceptionInterface if a parameter's value cannot be determined
+     * @throws \ReflectionException
      */
     public function call(callable $callable, array $args = []): mixed
     {
@@ -94,7 +120,7 @@ class Container implements ComposableContainer
             foreach ($paramClasses as $type) {
                 // Go with the first class name we can use
                 try {
-                    $param = $this->resolve($type->getType());
+                    $param = $this->get($type->getType());
                     $resolved = true;
                     break;
                 } catch (NotFoundException) {
@@ -126,9 +152,9 @@ class Container implements ComposableContainer
     }
 
     /**
-     * @throws ContainerException
+     * @throws ContainerExceptionInterface|\ReflectionException
      */
-    protected function resolve(string $id): mixed
+    protected function resolve(string $id): ResolvedFactory
     {
         // Find a resolver that can resolve this id
         $resolver = \array_find($this->resolvers, fn($resolver) => $resolver->has($id));
@@ -140,13 +166,15 @@ class Container implements ComposableContainer
         if (!$resolution->factory) {
             throw new ContainerException('Should not happen');
         }
+        return $resolution;
+    }
+
+    protected function cacheResolution(string $id, ResolvedFactory $resolution, mixed $instance): void
+    {
         if ($resolution->definition->shared) {
-            $instance = ($resolution->factory)();
             $this->cache->setShared($id, $instance);
-            return $instance;
         }
         $factory = $resolution->factory;
         $this->cache->setFactory($id, $factory);
-        return $factory();
     }
 }
