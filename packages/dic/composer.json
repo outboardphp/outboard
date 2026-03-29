@@ -1,6 +1,6 @@
 {
     "name": "outboardphp/di",
-    "description": "Dependency Injection Container for the Outboard framework and anyone else who wants to use it",
+    "description": "PSR-11 Dependency Injection Container",
     "license": "MPL-2.0",
     "type": "library",
     "keywords": [
