@@ -4,14 +4,32 @@ This is an IoC/DI container library for PHP, usable on its own or as part of the
 
 ## Design principles
 - Respect SOLID principles, especially SRP, more than most other DI libraries
-- Use a minimum of "magic", so that it is easy to understand
+- Use a minimum of "magic" so that it is straightforward to understand
 - Be powerful, flexible, and feature-rich, yet also fast and efficient
 - Support a modular/layered architecture, allowing for simplified configuration by multiple packages
 - Build on the work of [Level-2/Dice](https://github.com/Level-2/Dice), updating it for modern PHP and adding a few
   features from other libraries
 
 ## Status
-Still working on the architecture.
+Should be usable in its present state. Feel free to try it and report bugs.
+
+Implemented features:
+- Service retrieval and factory-style creation (`get()` / `make()`)
+- Shared and non-shared lifecycles (`shared`, prototype-by-default)
+- Constructor parameter overrides (`withParams()` by name or position)
+- Callable invocation with dependency resolution (`call()`)
+- Optional autowiring via resolver strategy (`AutowiringResolver`)
+- Definition inheritance across class/interface hierarchies (`strict` to opt out)
+- Parent-container fallback for dependency resolution (`setParent()`)
+
+Current missing features (planned):
+- Service tagging retrieval (`getTagged()` / tag queries)
+- Type-based parameter matching in `withParams`
+- Lazy services / lazy proxies
+- Runtime circular dependency detection with cycle-path errors
+- Parameter resolution for container-wide config values
+- Parameterized `make()` runtime constructor overrides
+
 Previously I started to catalogue the details of many DIC libraries in order to
 lay out my opinions on each and synthesize my favorite parts of all of them into
 my ideal DIC library. See [this repo's wiki](https://github.com/outboardphp/di/wiki).
@@ -34,24 +52,21 @@ The following libraries have aspects I really respect and plan to incorporate he
 - [Yii 3 DI](https://github.com/yiisoft/di)
 
 ## Characteristics
-- The container class is merely a repository and does not configure itself. A configuration is supplied to the container.
-- Configuration can be supplied by multiple providers, in a modular fashion.
-- Uses closures extensively internally and for certain parts of configuration, enabling great flexibility and performance.
-- Autowiring can be used but is not required.
-- Object creation can be delegated to a user-supplied callable, allowing for custom instantiation logic.
-- Like Dice, the internal API eschews typehints in favor of docblocks for performance reasons, but don't worry;
-the public API is typehinted for good DX.
-- Scalar constructor parameters can be specified in configuration, by position or by parameter name.
-- Arbitrary identifiers can be used to refer to instances in configuration, allowing for multiple instances of the same class.
-- Like most DI containers, classes/interfaces can have child classes/implementations substituted in their place by configuration.
-- Configuration definitions with class/interface identifiers will apply to all child classes/implementations, unless
-disabled on a per-definition basis.
-- Configuration definition identifiers can be regex patterns, allowing for flexible matching of class/interface names.
-- Scoped singletons can be created, allowing for instances to be shared within a specific part of the object tree.
-- The container can inject itself into instances. Of course, this should be used carefully and sparingly, but sometimes it is truly needed.
-- Any callable can take advantage of the container's autowiring and configuration.
-- After instantiation, the container can execute callables on objects for extra initialization logic or decoration, with the
-latter allowing replacement of the original instance
+- The container is a runtime repository; definitions are supplied externally rather than registered imperatively on the container.
+- Definitions can be composed from multiple providers for modular package-level configuration.
+- Resolver strategies are composable: explicit-definition resolution is the baseline, with optional autowiring resolution.
+- Definition IDs can be arbitrary strings, class/interface names, or regex patterns for broad matching rules.
+- Class/interface definitions inherit down the type hierarchy by default; `strict` disables inheritance for that definition.
+- A definition can substitute with a class name, another service ID, a callable factory, or a prebuilt instance.
+- Callable substitutes let definitions act as factories for custom object creation flows.
+- `withParams` supports constructor overrides for scalars and objects by parameter name or position.
+- Autowiring is optional and can be mixed with explicit parameter overrides.
+- Services are non-shared by default (prototype-style); enable `shared` for singleton behavior.
+- `get()` respects configured sharing/caching, while `make(string $id)` always returns a fresh instance.
+- The container can invoke any callable via `call()`, combining explicit args with container-based dependency resolution.
+- The container can inject itself when a dependency is type-hinted as the active container type.
+- Post-construction `call` hooks support initialization and decoration, including replacing the original instance.
+- Parent-container fallback is supported for delegated dependency lookup in composed container graphs.
 
 ## Won't Do
 - Explicit setter injection
