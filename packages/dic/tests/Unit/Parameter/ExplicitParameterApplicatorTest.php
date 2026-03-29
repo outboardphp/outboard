@@ -1,5 +1,7 @@
 <?php
 
+use Outboard\Di\Container;
+use Outboard\Di\Resolver;
 use Outboard\Di\Parameter\ExplicitParameterApplicator;
 use Outboard\Di\ValueObjects\Definition;
 
@@ -34,6 +36,47 @@ describe('ExplicitParameterApplicator', static function () {
         );
 
         expect($factory()->ok)->toBeTrue();
+    });
+
+    it('delegates callable invocation to Container::call() when available', function () {
+        $applicator = new ExplicitParameterApplicator();
+        $container = new Container([
+            new Resolver([
+                stdClass::class => new Definition(substitute: static fn() => new stdClass()),
+            ]),
+        ]);
+
+        $factory = $applicator->applyToCallable(
+            static fn(stdClass $obj) => $obj,
+            new Definition(),
+            $container,
+        );
+
+        expect($factory())->toBeInstanceOf(stdClass::class);
+    });
+
+    it('prefers explicit withParams over Container::call typehint resolution', function () {
+        $applicator = new ExplicitParameterApplicator();
+        $container = new Container([
+            new Resolver([
+                stdClass::class => new Definition(substitute: static function () {
+                    $obj = new stdClass();
+                    $obj->source = 'container';
+                    return $obj;
+                }),
+            ]),
+        ]);
+
+        $explicit = new stdClass();
+        $explicit->source = 'explicit';
+
+        $factory = $applicator->applyToCallable(
+            static fn(stdClass $obj) => $obj,
+            new Definition(withParams: ['obj' => $explicit]),
+            $container,
+        );
+
+        expect($factory()->source)->toBe('explicit');
     });
 });
 

@@ -1,5 +1,6 @@
 <?php
 
+use Outboard\Di\Container;
 use Outboard\Di\Resolver;
 use Outboard\Di\ValueObjects\Definition;
 
@@ -62,5 +63,26 @@ describe('ExplicitResolver', static function () {
         $resolved = $resolver->resolve('service', $container);
 
         expect(($resolved->factory)())->toBe(30);
+    });
+
+    it('resolves callable substitute typehints by asking the container', function () {
+        $dependency = new stdClass();
+        $dependency->ok = true;
+
+        $container = new Container([
+            new Resolver([
+                stdClass::class => new Definition(substitute: static fn() => $dependency, shared: true),
+            ]),
+        ]);
+
+        $resolver = new Resolver([
+            'service' => new Definition(
+                substitute: static fn(stdClass $obj) => $obj,
+            ),
+        ]);
+
+        $resolved = $resolver->resolve('service', $container);
+
+        expect(($resolved->factory)())->toBe($dependency);
     });
 });

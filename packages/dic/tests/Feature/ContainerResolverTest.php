@@ -46,6 +46,25 @@ it('passes withParams to the factory', function () {
     expect($result)->toBe([1, 2]);
 });
 
+it('resolves typed callable substitute parameters from the container without withParams', function () {
+    $definitions = [
+        stdClass::class => new Definition(
+            substitute: fn() => (object) ['value' => 42],
+        ),
+        'typed-factory' => new Definition(
+            substitute: fn(stdClass $obj) => $obj->value,
+        ),
+    ];
+
+    $container = new Container([
+        new Resolver($definitions),
+    ]);
+
+    $result = $container->get('typed-factory');
+
+    expect($result)->toBe(42);
+});
+
 it('decorates the instance using a call that returns', function () {
     $definitions = [
         'qux' => new Definition(

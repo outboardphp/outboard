@@ -2,6 +2,7 @@
 
 namespace Outboard\Di\Parameter;
 
+use Outboard\Di\Container;
 use Outboard\Di\Contracts\ParameterApplicatorInterface;
 use Outboard\Di\Support\ContainerReferenceResolver;
 use Outboard\Di\ValueObjects\Definition;
@@ -15,16 +16,22 @@ readonly class ExplicitParameterApplicator implements ParameterApplicatorInterfa
 
     public function applyToCallable($callable, Definition $definition, ContainerInterface $container)
     {
-        if (!$definition->withParams) {
-            return $callable instanceof \Closure ? $callable : $callable(...);
+        $withParams = $this->referenceResolver->resolve($definition->withParams, $container);
+
+        if ($container instanceof Container) {
+            return static fn () => $container->call($callable, $withParams);
         }
 
-        $params = $this->referenceResolver->resolve($definition->withParams, $container);
-        return static fn () => $callable(...$params);
+        return static fn () => $callable(...$withParams);
     }
 
     public function applyToConstructor($constructorFactory, string $targetId, Definition $definition, ContainerInterface $container)
     {
-        return $this->applyToCallable($constructorFactory, $definition, $container);
+        if (!$definition->withParams) {
+            return $constructorFactory instanceof \Closure ? $constructorFactory : $constructorFactory(...);
+        }
+
+        $params = $this->referenceResolver->resolve($definition->withParams, $container);
+        return static fn () => $constructorFactory(...$params);
     }
 }

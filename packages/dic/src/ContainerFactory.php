@@ -15,8 +15,8 @@ class ContainerFactory
     public function __construct(
         protected ?DefinitionProvider $definitionProvider = null,
         protected array $resolvers = [
-            AutowiringResolver::class,
             Resolver::class,
+            AutowiringResolver::class,
         ],
     ) {}
 
