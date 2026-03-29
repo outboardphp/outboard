@@ -41,7 +41,6 @@ Current missing features (planned):
 
 ## Installation
 
-**This package has not been submitted to Packagist yet.** When it is, you can use the following command:
 ```bash
 composer require outboardphp/di
 ```
