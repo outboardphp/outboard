@@ -75,7 +75,7 @@ class ConfigProvider implements DefinitionProvider
         // - Logger
         return [
             Application::class => new Definition(shared: true),
-            ApplicationRunner::class => new Definition(shared: true, substitute: $runnerSubstitute),
+            ApplicationRunner::class => new Definition(shared: true, strict: true, substitute: $runnerSubstitute),
             LaminasApplicationRunner::class => new Definition(
                 shared: true,
                 withParams: [
@@ -84,11 +84,12 @@ class ConfigProvider implements DefinitionProvider
                     'serverRequestErrorResponseGenerator' => '$serverRequestErrorResponseGenerator',
                 ]
             ),
-            RouterInterface::class => new Definition(shared: true, substitute: NullRouter::class),
-            ResponseEmitter::class => new Definition(shared: true, substitute: NoopResponseEmitter::class),
+            RouterInterface::class => new Definition(shared: true, strict: true, substitute: NullRouter::class),
+            ResponseEmitter::class => new Definition(shared: true, strict: true, substitute: NoopResponseEmitter::class),
             // The following are broken out to allow app configs to easily override them if needed.
             'Laminas\\HttpHandlerRunner\\Emitter\\EmitterInterface' => new Definition(
                 shared: true,
+                strict: true,
                 substitute: 'Laminas\\HttpHandlerRunner\\Emitter\\SapiEmitter',
             ),
             '$serverRequestFactory' => new Definition(
