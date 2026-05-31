@@ -54,9 +54,8 @@ class Container implements ComposableContainer
             return $this->cache->getFactory($id)();
         }
 
-        // First-time resolution
-        $resolution = $this->resolve($id);
-        $instance = ($resolution->factory)();
+        // First-time resolution with fallback support
+        [$resolution, $instance] = $this->resolve($id);
         $this->cacheResolution($id, $resolution, $instance);
         return $instance;
     }
@@ -75,9 +74,9 @@ class Container implements ComposableContainer
             return $this->cache->getFactory($id)();
         }
 
-        // First-time resolution, but don't cache anything
-        $resolution = $this->resolve($id);
-        return ($resolution->factory)();
+        // First-time resolution with fallback support
+        [, $instance] = $this->resolve($id);
+        return $instance;
     }
 
     public function has(string $id): bool
@@ -152,21 +151,46 @@ class Container implements ComposableContainer
     }
 
     /**
+     * Try each resolver in order, invoking the factory to confirm it works.
+     * If a resolver's factory fails (e.g., missing parameters in explicit resolution),
+     * fall through to the next resolver (e.g., autowiring).
+     * Returns both the ResolvedFactory and the already-created instance to avoid a redundant call.
+     *
+     * @return array{ResolvedFactory, mixed}
      * @throws ContainerExceptionInterface|\ReflectionException
      */
-    protected function resolve(string $id): ResolvedFactory
+    protected function resolve(string $id): array
     {
-        // Find a resolver that can resolve this id
-        $resolver = \array_find($this->resolvers, fn($resolver) => $resolver->has($id));
-        if ($resolver === null) {
-            throw new NotFoundException("No entry was found for '$id'.");
+        $lastException = null;
+
+        foreach ($this->resolvers as $resolver) {
+            if (!$resolver->has($id)) {
+                continue;
+            }
+
+            try {
+                $resolution = $resolver->resolve($id, $this->parent ?? $this);
+                if (!$resolution->factory) {
+                    throw new ContainerException('Should not happen');
+                }
+
+                // Invoke the factory once; if it fails (e.g., missing parameters in explicit
+                // resolution), catch and try the next resolver (e.g., autowiring).
+                $instance = ($resolution->factory)();
+                return [$resolution, $instance];
+            } catch (ContainerExceptionInterface $e) {
+                // Resolution or factory invocation failed, try next resolver
+                $lastException = $e;
+                continue;
+            }
         }
 
-        $resolution = $resolver->resolve($id, $this->parent ?? $this);
-        if (!$resolution->factory) {
-            throw new ContainerException('Should not happen');
+        // If we got here, no resolver could handle it
+        if ($lastException !== null) {
+            throw $lastException;
         }
-        return $resolution;
+
+        throw new NotFoundException("No entry was found for '$id'.");
     }
 
     protected function cacheResolution(string $id, ResolvedFactory $resolution, mixed $instance): void

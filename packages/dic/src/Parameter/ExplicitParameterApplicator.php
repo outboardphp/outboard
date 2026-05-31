@@ -4,6 +4,7 @@ namespace Outboard\Di\Parameter;
 
 use Outboard\Di\Container;
 use Outboard\Di\Contract\ParameterApplicatorInterface;
+use Outboard\Di\Exception\ContainerException;
 use Outboard\Di\Support\ContainerReferenceResolver;
 use Outboard\Di\ValueObject\Definition;
 use Psr\Container\ContainerInterface;
@@ -27,11 +28,21 @@ readonly class ExplicitParameterApplicator implements ParameterApplicatorInterfa
 
     public function applyToConstructor($constructorFactory, string $targetId, Definition $definition, ContainerInterface $container)
     {
-        if (!$definition->withParams) {
-            return $constructorFactory instanceof \Closure ? $constructorFactory : $constructorFactory(...);
-        }
+        $params = $definition->withParams
+            ? $this->referenceResolver->resolve($definition->withParams, $container)
+            : [];
 
-        $params = $this->referenceResolver->resolve($definition->withParams, $container);
-        return static fn () => $constructorFactory(...$params);
+        return static function () use ($constructorFactory, $targetId, $params): mixed {
+            try {
+                return $constructorFactory(...$params);
+            } catch (\ArgumentCountError | \TypeError $e) {
+                // Missing/wrong explicit constructor args means this resolver can't satisfy the target.
+                throw new ContainerException(
+                    "Failed to instantiate {$targetId} via explicit resolution: {$e->getMessage()}",
+                    0,
+                    $e
+                );
+            }
+        };
     }
 }
