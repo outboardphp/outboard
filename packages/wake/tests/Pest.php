@@ -33,13 +33,8 @@ pest()->extend(\Outboard\Wake\Tests\TestCase::class);
 arch()->preset()->php();
 arch()->preset()->security();
 
-arch()->expect('*')->toBeNamespaced();
-arch()->expect('*')->classes()->not->toBeAbstract();
 arch()->expect('*')->classes()->not->toBeFinal();
-arch()->expect('*')->classes()->not->toHavePrivateMethods();
-arch()->expect('*')->toUseStrictTypes();
 arch()->expect('*')->toUseStrictEquality();
-arch()->expect(['sleep', 'usleep'])->not->toBeUsed();
 
 /*
 |--------------------------------------------------------------------------

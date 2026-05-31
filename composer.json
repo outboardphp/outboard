@@ -30,7 +30,7 @@
         "ergebnis/composer-normalize": "^2.48",
         "friendsofphp/php-cs-fixer": "^3.17.0",
         "mockery/mockery": "^1.6",
-        "pestphp/pest": "^3.8",
+        "pestphp/pest": "^4.4",
         "phpcompatibility/php-compatibility": "@dev",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
@@ -101,6 +101,6 @@
         "monorepo:merge": "monorepo-builder merge",
         "monorepo:release": "monorepo-builder release",
         "monorepo:validate": "monorepo-builder validate",
-        "test": "pest --parallel --display-deprecations --display-phpunit-deprecations"
+        "test": "COLUMNS=120 pest -v --parallel --display-deprecations --display-phpunit-deprecations"
     }
 }
