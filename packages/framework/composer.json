@@ -7,7 +7,6 @@
         "php",
         "framework",
         "adr",
-        "mvvm",
         "oop",
         "modular",
         "mvc"
@@ -26,7 +25,9 @@
     "require": {
         "php": ">=8.4",
         "outboardphp/di": "@dev",
-        "psr/container": "^2.0"
+        "psr/container": "^2.0",
+        "psr/http-message": "^2.0",
+        "psr/http-server-handler": "^1.0"
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
@@ -36,6 +37,10 @@
         "phpstan/phpstan": "^2.1",
         "roave/security-advisories": "dev-latest",
         "squizlabs/php_codesniffer": "^3.13.2"
+    },
+    "suggest": {
+        "laminas/laminas-diactoros": "For PSR-7/17 support",
+        "laminas/laminas-httphandlerrunner": "For PSR-15 support"
     },
     "repositories": [
         {

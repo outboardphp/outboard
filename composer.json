@@ -18,6 +18,8 @@
         "fig/event-dispatcher-util": "dev-master",
         "psr/container": "^2.0",
         "psr/event-dispatcher": "^1.0.0",
+        "psr/http-message": "^2.0",
+        "psr/http-server-handler": "^1.0",
         "technically/callable-reflection": "^0.4.1"
     },
     "require-dev": {

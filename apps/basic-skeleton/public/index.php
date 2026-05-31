@@ -2,13 +2,20 @@
 
 declare(strict_types=1);
 
-require_once '../vendor/autoload.php';
+use Outboard\Framework\Contract\ApplicationRunner;
 
-$config = require '../config/di.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // Technically, any PSR-11-compatible DI container can be used,
-// but implementing a different one is on you.
-new \Outboard\Di\Container([
-    new \Outboard\Di\Resolver($config),
-])
-    ->get(\Outboard\Framework\Application::class)();
+// but if you want to use a different one, you'll at least need
+// to reimplement the framework config.
+
+// Merge configs from framework and app into a single provider
+$definitionProvider = new \Outboard\Di\OverrideableDefinitionProvider(
+    frameworkProvider: new \Outboard\Framework\ConfigProvider(),
+    appProvider: new \App\ConfigProvider(),
+    overrideableDefinitionIds: \Outboard\Framework\ConfigProvider::OVERRIDEABLE_IDS,
+);
+
+$container = new \Outboard\Di\ContainerFactory($definitionProvider)->build();
+$container->get(ApplicationRunner::class)->run();
