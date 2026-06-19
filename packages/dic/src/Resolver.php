@@ -45,6 +45,14 @@ class Resolver
     }
 
     /**
+     * @return array<string, Definition>
+     */
+    public function getDefinitions(): array
+    {
+        return $this->definitions;
+    }
+
+    /**
      * Determine if this resolver can resolve the given id.
      */
     public function has(string $id): bool

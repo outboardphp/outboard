@@ -63,12 +63,10 @@ class Container implements ComposableContainer
     /**
      * Always gets a fresh instance of a service, but uses the cached factory if possible.
      *
-     * @param string $id
-     * @return mixed
      * @throws ContainerExceptionInterface
      * @throws \ReflectionException
      */
-    public function make(string $id)
+    public function make(string $id): mixed
     {
         if ($this->cache->hasFactory($id)) {
             return $this->cache->getFactory($id)();
@@ -82,6 +80,19 @@ class Container implements ComposableContainer
     public function has(string $id): bool
     {
         return \array_any($this->resolvers, fn($resolver) => $resolver->has($id));
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getTagged(string $tag): array
+    {
+        return array_map([$this, 'get'], $this->checkTag($tag));
+    }
+
+    public function hasTag(string $tag): bool
+    {
+        return \count($this->checkTag($tag, true)) > 0;
     }
 
     /**
@@ -200,5 +211,26 @@ class Container implements ComposableContainer
         }
         $factory = $resolution->factory;
         $this->cache->setFactory($id, $factory);
+    }
+
+    /**
+     * @param string $tag
+     * @param bool $exitEarly
+     * @return string[]
+     */
+    protected function checkTag($tag, $exitEarly = false): array
+    {
+        $ids = [];
+        foreach ($this->resolvers as $resolver) {
+            foreach ($resolver->getDefinitions() as $id => $definition) {
+                if (\in_array($tag, $definition->tags, true)) {
+                    $ids[] = $id;
+                    if ($exitEarly) {
+                        break 2;
+                    }
+                }
+            }
+        }
+        return $ids;
     }
 }
