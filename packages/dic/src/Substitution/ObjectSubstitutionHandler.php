@@ -12,7 +12,8 @@ class ObjectSubstitutionHandler implements SubstitutionHandlerInterface
 {
     public function canHandle(Definition $definition): bool
     {
-        return \is_object($definition->substitute);
+        return \is_object($definition->substitute)
+            && !($definition->substitute instanceof \Closure);
     }
 
     public function resolve(
@@ -21,7 +22,7 @@ class ObjectSubstitutionHandler implements SubstitutionHandlerInterface
         ContainerInterface $container,
     ): SubstitutionResolution {
         return new SubstitutionResolution(
-            factory: static fn () => $definition->substitute,
+            factory: static fn() => $definition->substitute,
             mode: SubstitutionMode::Raw,
         );
     }
